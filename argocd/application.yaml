@@ -11,7 +11,7 @@ spec:
     path: yaml
   destination:
     server: https://kubernetes.default.svc
-    namespace: default
+    namespace: ndn
   syncPolicy:
     automated:
       prune: true     
