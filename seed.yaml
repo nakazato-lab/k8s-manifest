@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: seed-deployment
+  labels:
+    app: seed
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: seed
+  template:
+    metadata:
+      labels:
+        app: seed
+    spec:
+      serviceAccountName: seed-service-account # ★ここで先ほどの許可証を持たせる！
+      containers:
+        - name: seed
+          image: my-seed-image:latest
+          command: ["/bin/bash", "-c"]
+          # NFDのソケットができるまで待機してからSeedを起動
+          args:
+            - |
+              echo "Waiting for NFD socket..."
+              while [ ! -S /run/nfd.sock ]; do sleep 1; done;
+              export NDN_CLIENT_TRANSPORT="unix:///run/nfd.sock"
+              ./build/seed
+          volumeMounts:
+            - name: nfd-socket-dir
+              mountPath: /run # NFDと同じ場所をマウント
+      volumes:
+        - name: nfd-socket-dir
+          hostPath:
+            path: /var/run/nfd-k8s # NFDのYAMLと全く同じホスト側のパスを指定
+            type: DirectoryOrCreate

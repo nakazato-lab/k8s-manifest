@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nfd-deployment
+  labels:
+    app: nfd
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nfd
+  template:
+    metadata:
+      labels:
+        app: nfd
+    spec:
+      containers:
+        - name: nfd
+          image: my-nfd-image:latest
+          command: ["nfd"] # NFDを直接起動
+          securityContext:
+            privileged: true # ネットワークインターフェースを触るために必要
+          volumeMounts:
+            - name: nfd-socket-dir
+              mountPath: /run # コンテナ内の /run にマウント
+      volumes:
+        - name: nfd-socket-dir
+          hostPath:
+            path: /var/run/nfd-k8s # ホストPCのこの場所をソケット共有用ディレクトリとする
+            type: DirectoryOrCreate
