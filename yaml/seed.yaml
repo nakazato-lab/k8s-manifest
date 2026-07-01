@@ -1,11 +1,10 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: DaemonSet
 metadata:
-  name: seed-deployment
+  name: seed-daemonset
   labels:
     app: seed
 spec:
-  replicas: 1
   selector:
     matchLabels:
       app: seed
