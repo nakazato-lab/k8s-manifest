@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: nfd
-          image: my-nfd-image:latest
+          image: ryotaroiwata/my-nfd-image:latest
           command: ["nfd"] # NFDを直接起動
           securityContext:
             privileged: true # ネットワークインターフェースを触るために必要

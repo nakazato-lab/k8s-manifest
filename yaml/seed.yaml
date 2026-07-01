@@ -17,7 +17,7 @@ spec:
       serviceAccountName: seed-service-account # ★ここで先ほどの許可証を持たせる！
       containers:
         - name: seed
-          image: my-seed-image:latest
+          image: ryotaroiwata/my-seed-image:latest
           command: ["/bin/bash", "-c"]
           # NFDのソケットができるまで待機してからSeedを起動
           args:
