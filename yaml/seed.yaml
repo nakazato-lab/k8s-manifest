@@ -17,6 +17,12 @@ spec:
       containers:
         - name: seed
           image: ryotaroiwata/ndn-seed:latest
+          imagePullPolicy: Always
+          env:
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
           command: ["/bin/bash", "-c"]
           # NFDのソケットができるまで待機してからSeedを起動
           args:
@@ -24,7 +30,7 @@ spec:
               echo "Waiting for NFD socket..."
               while [ ! -S /run/nfd.sock ]; do sleep 1; done;
               export NDN_CLIENT_TRANSPORT="unix:///run/nfd.sock"
-              ./build/seed
+              seed --namespace ndn /$(NODE_NAME)/seed/
           volumeMounts:
             - name: nfd-socket-dir
               mountPath: /run # NFDと同じ場所をマウント
