@@ -30,7 +30,7 @@ spec:
               echo "Waiting for NFD socket..."
               while [ ! -S /run/nfd.sock ]; do sleep 1; done;
               export NDN_CLIENT_TRANSPORT="unix:///run/nfd.sock"
-              seed --namespace ndn /$(NODE_NAME)/seed/
+              ndnseed --namespace ndn /$(NODE_NAME)/seed/
           volumeMounts:
             - name: nfd-socket-dir
               mountPath: /run # NFDと同じ場所をマウント
