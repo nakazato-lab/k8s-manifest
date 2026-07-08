@@ -27,9 +27,7 @@ spec:
           # NFDのソケットができるまで待機してからSeedを起動
           args:
             - |
-              echo "Waiting for NFD socket..."
-              while [ ! -S /run/nfd.sock ]; do sleep 1; done;
-              export NDN_CLIENT_TRANSPORT="unix:///run/nfd.sock"
+              export NDN_CLIENT_TRANSPORT="tcp4://nfd-service.ndn.svc.cluster.local:6363"
               ndnseed --namespace ndn /$(NODE_NAME)/seed/
           volumeMounts:
             - name: nfd-socket-dir
