@@ -18,6 +18,10 @@ spec:
         - name: nfd
           image: ryotaroiwata/ndn-nfd:latest
           command: ["nfd"] # NFDを直接起動
+          ports:
+            - name: ndn
+              containerPort: 6363
+              protocol: UDP
           securityContext:
             privileged: true # ネットワークインターフェースを触るために必要
           volumeMounts:
