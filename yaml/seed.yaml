@@ -13,7 +13,8 @@ spec:
       labels:
         app: seed
     spec:
-      serviceAccountName: seed-service-account # ★ここで先ほどの許可証を持たせる！
+      serviceAccountName: seed-service-account
+      # nfd待機用initContainers 検討
       containers:
         - name: seed
           image: ryotaroiwata/ndn-seed:latest
@@ -27,13 +28,15 @@ spec:
           # NFDのソケットができるまで待機してからSeedを起動
           args:
             - |
-              export NDN_CLIENT_TRANSPORT="tcp4://nfd-service.ndn.svc.cluster.local:6363"
-              ndnseed --namespace ndn /$(NODE_NAME)/seed/
+              NFD_IP=$(cat /etc/nfd-config/ADDRESS)
+              export NDN_CLIENT_TRANSPORT="tcp4://${NFD_IP}:6363"
+              echo "Connecting to NFD at ${NDN_CLIENT_TRANSPORT}..."
+              ndnseed --namespace ndn /${NODE_NAME}/seed/
           volumeMounts:
-            - name: nfd-socket-dir
-              mountPath: /run # NFDと同じ場所をマウント
+            - name: nfd-config
+              mountPath: /etc/nfd-config
       volumes:
-        - name: nfd-socket-dir
-          hostPath:
-            path: /var/run/nfd-k8s # NFDのYAMLと全く同じホスト側のパスを指定
-            type: DirectoryOrCreate
+        - name: nfd-config
+          configMap:
+            name: nfd-config
+            optional: false
