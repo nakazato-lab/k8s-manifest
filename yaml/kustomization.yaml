@@ -7,4 +7,3 @@ resources:
   - nfd.yaml
   - seed-rbac.yaml
   - seed.yaml
-  - nfd-service.yaml
