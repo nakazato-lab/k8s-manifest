@@ -29,7 +29,7 @@ spec:
           args:
             - |
               NFD_IP=$(cat /etc/nfd-config/ADDRESS)
-              export NDN_CLIENT_TRANSPORT="tcp4://${NFD_IP}:6363"
+              export NDN_CLIENT_TRANSPORT="tcp4://${NFD_IP}"
               echo "Connecting to NFD at ${NDN_CLIENT_TRANSPORT}..."
               ndnseed --namespace ndn /${NODE_NAME}/seed/
           volumeMounts:
