@@ -60,7 +60,7 @@ spec:
               NFD_ADDR=$(cat /etc/nfd-config/ADDRESS)
               export NDN_CLIENT_TRANSPORT="tcp4://${NFD_ADDR}"
               echo "Connecting to NFD at ${NDN_CLIENT_TRANSPORT}..."
-              ndnseed --namespace ndn /${NODE_NAME}/seed/
+              ndnseed -v --namespace ndn /${NODE_NAME}/seed/
           volumeMounts:
             - name: nfd-config
               mountPath: /etc/nfd-config
