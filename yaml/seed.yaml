@@ -15,6 +15,35 @@ spec:
     spec:
       serviceAccountName: seed-service-account
       # nfd待機用initContainers 検討
+      initContainers:
+        - name: wait-for-nfd-ip
+          image: busybox:1.36
+          imagePullPolicy: IfNotPresent
+          command:
+            - "sh"
+            - "-c"
+            - |
+              while true; do
+                ENDPOINT=$(cat /etc/nfd-config/ADDRESS 2>/dev/null || echo 'not available yet')
+                echo "NFD endpoint: $ENDPOINT"
+
+                if [ "$ENDPOINT" != "not available yet" ]; then
+                  NFD_ADDR=$ENDPOINT
+                  break
+                fi
+                sleep 10
+              done
+
+              echo "Target NFD IP found: $NFD_ADDR"
+
+              until nc -zvw3 "$NFD_ADDR"; do
+                echo "waiting for NFD at $NFD_ADDR..."
+                sleep 10
+              done
+          volumeMounts:
+            - name: nfd-config
+              mountPath: /etc/nfd-config
+              readOnly: true
       containers:
         - name: seed
           image: ryotaroiwata/ndn-seed:latest
@@ -28,10 +57,10 @@ spec:
           # NFDのソケットができるまで待機してからSeedを起動
           args:
             - |
-              NFD_IP=$(cat /etc/nfd-config/ADDRESS)
-              export NDN_CLIENT_TRANSPORT="tcp4://${NFD_IP}"
+              NFD_ADDR=$(cat /etc/nfd-config/ADDRESS)
+              export NDN_CLIENT_TRANSPORT="tcp4://${NFD_ADDR}"
               echo "Connecting to NFD at ${NDN_CLIENT_TRANSPORT}..."
-              ndnseed --namespace ndn /${NODE_NAME}/seed/
+              ndnseed -v --namespace ndn /${NODE_NAME}/seed/
           volumeMounts:
             - name: nfd-config
               mountPath: /etc/nfd-config
