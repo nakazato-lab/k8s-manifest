@@ -11,6 +11,9 @@ spec:
     targetRevision: 1.11.3
     helm:
       values: |
+        # ArgoCDではpre-upgradeフックJobがServiceAccountより先に走って失敗するため無効化
+        preUpgradeChecker:
+          jobEnabled: false
         longhornUI:
           replicas: 0
         persistence:
