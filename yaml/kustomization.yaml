@@ -7,3 +7,7 @@ resources:
   - nfd.yaml
   - seed-rbac.yaml
   - seed.yaml
+  - spy-rbac.yaml
+  - spy.yaml
+  - manager-rbac.yaml
+  - manager.yaml
