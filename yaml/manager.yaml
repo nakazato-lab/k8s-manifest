@@ -62,7 +62,7 @@ spec:
 
       containers:
       - name: manager
-        image: tmkmzk/ndn-manager:latest
+        image: ghcr.io/nakazato-lab/ndn_resorce_placement/ndn-manager:latest
         imagePullPolicy: Always
         volumeMounts:
         - name: nfd-endpoint
