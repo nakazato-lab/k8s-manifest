@@ -11,3 +11,4 @@ resources:
   - spy.yaml
   - manager-rbac.yaml
   - manager.yaml
+  - registerer.yaml
