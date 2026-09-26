@@ -13,7 +13,7 @@ metadata:
   name: seed-pod-manager-role
 rules:
   - apiGroups: [""]
-    resources: ["pods"]
+    resources: ["pods", "configmaps"]
     verbs: ["get", "list", "watch", "create", "delete"]
 
 ---

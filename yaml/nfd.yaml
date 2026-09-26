@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: nfd
-          image: ryotaroiwata/ndn-nfd:latest
+          image: ghcr.io/nakazato-lab/ndn-tools-seed-python/ndn-nfd:latest
           command: ["nfd"] # NFDを直接起動
           env:
             - name: NDN_LOG
