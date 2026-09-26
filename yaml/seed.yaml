@@ -56,7 +56,9 @@ spec:
           imagePullPolicy: Always
           env:
             - name: FUNCTION_IMAGE
-              value: ghcr.io/nakazato-lab/ndn-tools-seed-python/my-edge-function:latest
+              value: ghcr.io/nakazato-lab/ndn-tools-seed-python/ndn-function-runtime:latest
+            - name: SIDECAR_IMAGE
+              value: ghcr.io/nakazato-lab/ndn-tools-seed-python/ndn-function-sidecar:latest
             - name: NODE_NAME
               valueFrom:
                 fieldRef:

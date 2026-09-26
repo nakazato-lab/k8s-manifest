@@ -1,44 +1,49 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: function-invoke-job
+  name: function-register-job
   namespace: ndn
   labels:
-    app: function-invoke
+    app: function-register
 spec:
   backoffLimit: 2
-  activeDeadlineSeconds: 300
-  # Keep the completed Job so Argo CD self-heal does not repeatedly recreate it.
+  activeDeadlineSeconds: 180
   template:
     metadata:
       labels:
-        app: function-invoke
+        app: function-register
     spec:
       restartPolicy: Never
       containers:
-        - name: consumer
+        - name: registerer
           image: ghcr.io/nakazato-lab/ndn-tools-seed-python/ndn-function-sidecar:latest
           imagePullPolicy: Always
+          command: ["python", "-u", "/scripts/function_register.py"]
           env:
-            - name: FUNCTION_PREFIX
-              value: /average
-            - name: FUNCTION_ARGS
-              value: '["10", "20"]'
+            - name: FUNCTION_PATH
+              value: /functions/average.ndn
             - name: NFD_CONFIG_PATH
               value: /etc/ndn-config/ADDRESS
-          command: ["python", "-u", "/scripts/function_invoke.py"]
+            - name: MANAGER_REGISTER_NAME
+              value: /Manager/register
           volumeMounts:
-            - name: consumer-script
+            - name: register-script
               mountPath: /scripts
+              readOnly: true
+            - name: function-source
+              mountPath: /functions
               readOnly: true
             - name: nfd-endpoint
               mountPath: /etc/ndn-config
               readOnly: true
       volumes:
-        - name: consumer-script
+        - name: register-script
           configMap:
-            name: function-invoke-script
+            name: function-register-script
+        - name: function-source
+          configMap:
+            name: function-register-source
         - name: nfd-endpoint
           configMap:
             name: nfd-config
-            optional: true
+            optional: false
