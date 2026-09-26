@@ -12,3 +12,9 @@ resources:
   - manager-rbac.yaml
   - manager.yaml
   - registerer.yaml
+  - function-invoke.yaml
+
+configMapGenerator:
+  - name: function-invoke-script
+    files:
+      - function_invoke.py=scripts/function_invoke.py
