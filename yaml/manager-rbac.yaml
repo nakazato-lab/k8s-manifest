@@ -25,3 +25,27 @@ roleRef:
   kind: ClusterRole
   name: manager-node-reader
   apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: manager-function-reader
+  namespace: ndn
+rules:
+- apiGroups: [""]
+  resources: ["pods", "configmaps"]
+  verbs: ["list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: manager-function-reader-binding
+  namespace: ndn
+subjects:
+- kind: ServiceAccount
+  name: manager-service-account
+  namespace: ndn
+roleRef:
+  kind: Role
+  name: manager-function-reader
+  apiGroup: rbac.authorization.k8s.io
