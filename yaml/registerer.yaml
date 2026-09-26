@@ -52,9 +52,6 @@ spec:
       - name: registerer
         image: ghcr.io/nakazato-lab/ndn_resorce_placement/ndn-registerer:latest
         imagePullPolicy: Always
-        env:
-        - name: FUNCTION_NAME
-          value: average
         volumeMounts:
         - name: nfd-endpoint
           mountPath: /etc/ndn-config
