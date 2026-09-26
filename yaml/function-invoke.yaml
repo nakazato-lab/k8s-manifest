@@ -3,6 +3,8 @@ kind: Job
 metadata:
   name: function-invoke-job
   namespace: ndn
+  annotations:
+    argocd.argoproj.io/sync-options: Force=true,Replace=true
   labels:
     app: function-invoke
 spec:
