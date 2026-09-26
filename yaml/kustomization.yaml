@@ -18,6 +18,9 @@ configMapGenerator:
   - name: function-invoke-script
     files:
       - function_invoke.py=scripts/function_invoke.py
+  - name: function-invoke-source
+    files:
+      - use_average.ndn=functions/use_average.ndn
   - name: function-register-script
     files:
       - function_register.py=scripts/function_register.py

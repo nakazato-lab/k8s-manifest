@@ -1,15 +1,8 @@
 import asyncio
-import json
 import logging
 import os
 from pathlib import Path
 from urllib.parse import urlparse
-
-from ndn.app import NDNApp
-from ndn.encoding import Name
-from ndn.security import KeychainDigest
-from ndn.transport.stream_face import TcpFace
-from ndn.types import InterestNack, InterestTimeout
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
@@ -35,39 +28,32 @@ async def wait_for_nfd():
     raise RuntimeError("NFD was not ready within 90 seconds")
 
 async def main():
-    prefix = os.environ["FUNCTION_PREFIX"].rstrip("/")
-    args = json.loads(os.environ["FUNCTION_ARGS"])
-    if not prefix.startswith("/") or not prefix or not isinstance(args, list):
-        raise ValueError("FUNCTION_PREFIX must be an NDN prefix and FUNCTION_ARGS a JSON array")
-    interest_name = prefix + "/(" + ",".join(str(arg) for arg in args) + ")"
+    script_path = Path(os.environ["NDN_SCRIPT_PATH"])
+    if not script_path.is_file():
+        raise FileNotFoundError(f"NDN script not found: {script_path}")
     host, port = await wait_for_nfd()
     logging.info("Connecting to NFD: %s:%s", host, port)
-    app = NDNApp(face=TcpFace(host, port), keychain=KeychainDigest())
-
-    async def invoke():
-        deadline = asyncio.get_running_loop().time() + 180
-        try:
-            while asyncio.get_running_loop().time() < deadline:
-                logging.info("Calling function: %s", interest_name)
-                try:
-                    # Send the call directly. Do not fetch /code or execute locally.
-                    name, _, content = await app.express_interest(
-                        interest_name, must_be_fresh=True, can_be_prefix=False,
-                        lifetime=min(30000, max(1, int((deadline - asyncio.get_running_loop().time()) * 1000))))
-                    result = bytes(content or b"").decode("utf-8")
-                    if result.lstrip().lower().startswith("error:"):
-                        raise RuntimeError(result)
-                    logging.info("Response name: %s", Name.to_str(name))
-                    print("Result: " + result, flush=True)
-                    return
-                except (InterestNack, InterestTimeout) as exc:
-                    logging.info("Function route/response not ready (%s); retrying", type(exc).__name__)
-                    await asyncio.sleep(2)
-            raise RuntimeError("No function response within 180 seconds")
-        finally:
-            app.shutdown()
-
-    await app.main_loop(after_start=invoke())
+    environment = os.environ.copy()
+    environment["NDN_CLIENT_TRANSPORT"] = f"tcp4://{host}:{port}"
+    deadline = asyncio.get_running_loop().time() + 180
+    while asyncio.get_running_loop().time() < deadline:
+        logging.info("Running NDN script: %s", script_path)
+        process = await asyncio.create_subprocess_exec(
+            "ndnc", "run", str(script_path),
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE,
+            env=environment,
+        )
+        stdout, stderr = await process.communicate()
+        if process.returncode == 0:
+            if stderr:
+                logging.info("ndnc stderr: %s", stderr.decode("utf-8", errors="replace").strip())
+            print(stdout.decode("utf-8"), end="", flush=True)
+            return
+        logging.info("Function route/response not ready: %s", stderr.decode(
+            "utf-8", errors="replace").strip())
+        await asyncio.sleep(2)
+    raise RuntimeError("ndnc run did not complete within 180 seconds")
 
 try:
     asyncio.run(main())

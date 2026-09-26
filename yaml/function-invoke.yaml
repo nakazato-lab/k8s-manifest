@@ -17,19 +17,20 @@ spec:
       restartPolicy: Never
       containers:
         - name: consumer
-          image: ghcr.io/nakazato-lab/ndn-tools-seed-python/ndn-function-sidecar:latest
+          image: ghcr.io/nakazato-lab/ndn-tools-seed-python/ndn-function-runtime:latest
           imagePullPolicy: Always
           env:
-            - name: FUNCTION_PREFIX
-              value: /average
-            - name: FUNCTION_ARGS
-              value: '["10", "20"]'
+            - name: NDN_SCRIPT_PATH
+              value: /functions/use_average.ndn
             - name: NFD_CONFIG_PATH
               value: /etc/ndn-config/ADDRESS
           command: ["python", "-u", "/scripts/function_invoke.py"]
           volumeMounts:
             - name: consumer-script
               mountPath: /scripts
+              readOnly: true
+            - name: invoke-source
+              mountPath: /functions
               readOnly: true
             - name: nfd-endpoint
               mountPath: /etc/ndn-config
@@ -38,6 +39,9 @@ spec:
         - name: consumer-script
           configMap:
             name: function-invoke-script
+        - name: invoke-source
+          configMap:
+            name: function-invoke-source
         - name: nfd-endpoint
           configMap:
             name: nfd-config
