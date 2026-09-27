@@ -13,8 +13,11 @@ metadata:
   name: seed-pod-manager-role
 rules:
   - apiGroups: [""]
-    resources: ["pods", "configmaps"]
+    resources: ["pods"]
     verbs: ["get", "list", "watch", "create", "delete"]
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    verbs: ["get"]
 
 ---
 # 3. アカウントとルールを紐付ける

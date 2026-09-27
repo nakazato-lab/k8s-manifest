@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: function-register-average-f4b9adafa604
+  name: function-average
   namespace: ndn
   annotations:
     argocd.argoproj.io/sync-wave: '0'
@@ -14,7 +14,7 @@ data:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: function-register-average-f4b9adafa604
+  name: function-register-average-62aeffdb419e
   namespace: ndn
   annotations:
     argocd.argoproj.io/sync-wave: '1'
@@ -52,7 +52,7 @@ spec:
       volumes:
       - name: script
         configMap:
-          name: function-register-average-f4b9adafa604
+          name: function-average
       - name: nfd-endpoint
         configMap:
           name: nfd-config
