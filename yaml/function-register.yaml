@@ -9,12 +9,12 @@ metadata:
 data:
   average.ndn: |-
     let avg = (arg0 + arg1) / 2
-    print avg
+    return avg
 ---
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: function-register-average-62aeffdb419e
+  name: function-register-average-936306957dcd
   namespace: ndn
   annotations:
     argocd.argoproj.io/sync-wave: '1'
