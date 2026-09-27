@@ -2,64 +2,6 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: function-average-3
-  namespace: ndn
-  annotations:
-    argocd.argoproj.io/sync-wave: '0'
-data:
-  average-3.ndn: |-
-    let avg = (arg0 + arg1 + arg2) / 3
-    print avg
----
-apiVersion: batch/v1
-kind: Job
-metadata:
-  name: function-register-average-3-1f065a9f4cd8
-  namespace: ndn
-  annotations:
-    argocd.argoproj.io/sync-wave: '1'
-spec:
-  backoffLimit: 2
-  activeDeadlineSeconds: 180
-  template:
-    metadata:
-      labels:
-        app: function-register
-    spec:
-      restartPolicy: Never
-      containers:
-      - name: registerer
-        image: ghcr.io/nakazato-lab/function-utils/ndn-function-registerer:latest
-        imagePullPolicy: Always
-        command:
-        - python
-        - -u
-        - /app/register.py
-        env:
-        - name: FUNCTION_PATH
-          value: /scripts/average-3.ndn
-        - name: NFD_CONFIG_PATH
-          value: /etc/ndn-config/ADDRESS
-        - name: MANAGER_REGISTER_NAME
-          value: /Manager/register
-        volumeMounts:
-        - name: script
-          mountPath: /scripts
-          readOnly: true
-        - name: nfd-endpoint
-          mountPath: /etc/ndn-config
-          readOnly: true
-      volumes:
-      - name: script
-        configMap:
-          name: function-average-3
-      - name: nfd-endpoint
-        configMap:
-          name: nfd-config
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
   name: function-average
   namespace: ndn
   annotations:
@@ -111,6 +53,48 @@ spec:
       - name: script
         configMap:
           name: function-average
+      - name: nfd-endpoint
+        configMap:
+          name: nfd-config
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: function-delete-average-3-1f065a9f4cd8
+  namespace: ndn
+  annotations:
+    argocd.argoproj.io/sync-wave: '1'
+spec:
+  backoffLimit: 2
+  activeDeadlineSeconds: 300
+  template:
+    metadata:
+      labels:
+        app: function-register
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: registerer
+        image: ghcr.io/nakazato-lab/function-utils/ndn-function-registerer:latest
+        imagePullPolicy: Always
+        command:
+        - python
+        - -u
+        - /app/register.py
+        env:
+        - name: FUNCTION_PATH
+          value: /scripts/average-3.ndn
+        - name: NFD_CONFIG_PATH
+          value: /etc/ndn-config/ADDRESS
+        - name: MANAGER_REGISTER_NAME
+          value: /Manager/register
+        - name: FUNCTION_OPERATION
+          value: DELETE
+        volumeMounts:
+        - name: nfd-endpoint
+          mountPath: /etc/ndn-config
+          readOnly: true
+      volumes:
       - name: nfd-endpoint
         configMap:
           name: nfd-config
