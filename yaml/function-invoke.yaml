@@ -2,7 +2,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: function-invoke-use-average-2ccb519fc9aa
+  name: function-invoke-use-average-d44c71291873
   namespace: ndn
   annotations:
     argocd.argoproj.io/sync-wave: '2'
@@ -30,7 +30,7 @@ spec:
           value: use_average.ndn
         - name: NDN_SCRIPT_SOURCE
           value: |
-            let result = average(10, 20)
+            let result = average(10, 50)
             print result
         volumeMounts:
         - name: nfd-endpoint
