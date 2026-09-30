@@ -2,6 +2,50 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
+  name: function-register-average-3-cae69ccf649f
+  namespace: ndn
+  annotations:
+    argocd.argoproj.io/sync-wave: '1'
+spec:
+  backoffLimit: 2
+  activeDeadlineSeconds: 180
+  template:
+    metadata:
+      labels:
+        app: function-register
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: registerer
+        image: ghcr.io/nakazato-lab/function-utils/ndn-function-registerer:latest
+        imagePullPolicy: Always
+        command:
+        - python
+        - -u
+        - /app/register.py
+        env:
+        - name: NFD_CONFIG_PATH
+          value: /etc/ndn-config/ADDRESS
+        - name: FUNCTION_NAME
+          value: average-3
+        - name: FUNCTION_CODE
+          value: |-
+            let avg = (arg0 + arg1 + arg3) / 3
+            return avg
+        - name: MANAGER_REGISTER_NAME
+          value: /Manager/register
+        volumeMounts:
+        - name: nfd-endpoint
+          mountPath: /etc/ndn-config
+          readOnly: true
+      volumes:
+      - name: nfd-endpoint
+        configMap:
+          name: nfd-config
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
   name: function-register-average-deba9de23888
   namespace: ndn
   annotations:
@@ -34,48 +78,6 @@ spec:
             return avg
         - name: MANAGER_REGISTER_NAME
           value: /Manager/register
-        volumeMounts:
-        - name: nfd-endpoint
-          mountPath: /etc/ndn-config
-          readOnly: true
-      volumes:
-      - name: nfd-endpoint
-        configMap:
-          name: nfd-config
----
-apiVersion: batch/v1
-kind: Job
-metadata:
-  name: function-delete-average-3-1f065a9f4cd8
-  namespace: ndn
-  annotations:
-    argocd.argoproj.io/sync-wave: '1'
-spec:
-  backoffLimit: 2
-  activeDeadlineSeconds: 300
-  template:
-    metadata:
-      labels:
-        app: function-register
-    spec:
-      restartPolicy: Never
-      containers:
-      - name: registerer
-        image: ghcr.io/nakazato-lab/function-utils/ndn-function-registerer:latest
-        imagePullPolicy: Always
-        command:
-        - python
-        - -u
-        - /app/register.py
-        env:
-        - name: NFD_CONFIG_PATH
-          value: /etc/ndn-config/ADDRESS
-        - name: MANAGER_REGISTER_NAME
-          value: /Manager/register
-        - name: FUNCTION_OPERATION
-          value: DELETE
-        - name: FUNCTION_NAME
-          value: average-3
         volumeMounts:
         - name: nfd-endpoint
           mountPath: /etc/ndn-config
