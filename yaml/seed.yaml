@@ -47,7 +47,7 @@ spec:
                 sleep 10
               done
           volumeMounts:
-            - name: nfd-config
+            - name: nfd-client-config
               mountPath: /etc/nfd-config
               readOnly: true
       containers:
@@ -72,10 +72,10 @@ spec:
               echo "Connecting to NFD at ${NDN_CLIENT_TRANSPORT}..."
               exec python -m seed -v --namespace ndn "/${NODE_NAME}/seed"
           volumeMounts:
-            - name: nfd-config
+            - name: nfd-client-config
               mountPath: /etc/nfd-config
       volumes:
-        - name: nfd-config
+        - name: nfd-client-config
           configMap:
-            name: nfd-config
+            name: nfd-client-config
             optional: false

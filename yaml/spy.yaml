@@ -40,7 +40,9 @@ spec:
           
             echo "Target NFD IP found: $NFD_ADDR"
           
-            until nc -zvw3 "$NFD_ADDR"; do
+            NFD_HOST=${NFD_ADDR%:*}
+            NFD_PORT=${NFD_ADDR##*:}
+            until nc -z -w 3 "$NFD_HOST" "$NFD_PORT"; do
               echo "waiting for NFD at $NFD_ADDR..."
               sleep 10
             done
@@ -71,7 +73,7 @@ spec:
       # NFDのIPが格納されているConfigMap
       - name: nfd-endpoint
         configMap:
-          name: nfd-config
+          name: nfd-client-config
           optional: true
       # ノード物理マシンのリソース情報を覗くためのホストパス
       - name: host-proc

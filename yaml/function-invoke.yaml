@@ -2,7 +2,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: function-invoke-use-average-4da99e7cbc1b
+  name: function-invoke-use-average-0dbb6fdefbaa
   namespace: ndn
   annotations:
     argocd.argoproj.io/sync-wave: '2'
@@ -42,5 +42,5 @@ spec:
       volumes:
       - name: nfd-endpoint
         configMap:
-          name: nfd-config
+          name: nfd-client-config
 
