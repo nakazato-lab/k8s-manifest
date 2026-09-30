@@ -4,6 +4,7 @@ kind: Kustomization
 namespace: ndn
 
 resources:
+  - ../conf
   - nfd.yaml
   - seed-rbac.yaml
   - seed.yaml

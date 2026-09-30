@@ -1,0 +1,12 @@
+FROM ubuntu:22.04
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && apt-get install -y --no-install-recommends software-properties-common ca-certificates \
+    && add-apt-repository ppa:named-data/ppa \
+    && apt-get update && apt-get install -y --no-install-recommends nlsr ndnsec netcat-openbsd \
+    && rm -rf /var/lib/apt/lists/*
+
+ENV NDN_CLIENT_TRANSPORT=unix:///run/nfd.sock
+
+# The configuration and startup script are mounted by the StatefulSet.
+CMD ["/bin/sh", "/config/start-nlsr.sh"]

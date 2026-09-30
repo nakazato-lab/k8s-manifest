@@ -1,0 +1,55 @@
+name: Build and Push NFD and NLSR Images
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - Dockerfile.nfd
+      - Dockerfile.nlsr
+      - .github/workflows/docker-push.yaml
+  pull_request:
+    paths:
+      - Dockerfile.nfd
+      - Dockerfile.nlsr
+      - .github/workflows/docker-push.yaml
+
+permissions:
+  contents: read
+
+env:
+  REGISTRY: ghcr.io
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: NFD
+            dockerfile: ./Dockerfile.nfd
+            image: ndn-nfd
+          - name: NLSR
+            dockerfile: ./Dockerfile.nlsr
+            image: ndn-nlsr
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - name: Log in to GitHub Container Registry
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and push ${{ matrix.name }}
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ${{ matrix.dockerfile }}
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ env.REGISTRY }}/${{ github.repository }}/${{ matrix.image }}:latest
+          labels: org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}

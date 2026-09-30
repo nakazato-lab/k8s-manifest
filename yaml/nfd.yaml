@@ -1,11 +1,52 @@
-apiVersion: apps/v1
-kind: Deployment
+# Per-router Services keep peer addresses stable when a Pod is recreated.
+apiVersion: v1
+kind: Service
 metadata:
-  name: nfd-deployment
+  name: nfd-peer-0
+spec:
+  selector:
+    statefulset.kubernetes.io/pod-name: nfd-0
+  ports:
+    - name: ndn-tcp
+      port: 6363
+      protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nfd-peer-1
+spec:
+  selector:
+    statefulset.kubernetes.io/pod-name: nfd-1
+  ports:
+    - name: ndn-tcp
+      port: 6363
+      protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nfd-headless
+spec:
+  clusterIP: None
+  publishNotReadyAddresses: true
+  selector:
+    app: nfd
+  ports:
+    - name: ndn-tcp
+      port: 6363
+      protocol: TCP
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: nfd
   labels:
     app: nfd
 spec:
-  replicas: 1
+  serviceName: nfd-headless
+  replicas: 2
+  podManagementPolicy: Parallel
   selector:
     matchLabels:
       app: nfd
@@ -14,24 +55,72 @@ spec:
       labels:
         app: nfd
     spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  app: nfd
+              topologyKey: kubernetes.io/hostname
       containers:
         - name: nfd
-          image: ghcr.io/nakazato-lab/ndn-tools-seed-python/ndn-nfd:latest
-          command: ["nfd"] # NFDを直接起動
-          env:
-            - name: NDN_LOG
-              value: "nfd.Forwarder=TRACE:nfd.Fib=DEBUG:nfd.BestRouteStrategy=DEBUG:nfd.FaceTable=DEBUG"
+          image: ghcr.io/nakazato-lab/k8s-manifest/ndn-nfd:latest
+          imagePullPolicy: Always
+          command: [nfd, --config, /etc/ndn/nfd.conf]
           ports:
-            - name: ndn
+            - name: ndn-tcp
+              containerPort: 6363
+              protocol: TCP
+            - name: ndn-udp
               containerPort: 6363
               protocol: UDP
           securityContext:
-            privileged: true # ネットワークインターフェースを触るために必要
+            privileged: true
+          readinessProbe:
+            tcpSocket:
+              port: ndn-tcp
+            periodSeconds: 5
           volumeMounts:
             - name: nfd-socket-dir
-              mountPath: /run # コンテナ内の /run にマウント
+              mountPath: /run
+        - name: nlsr
+          image: ghcr.io/nakazato-lab/k8s-manifest/ndn-nlsr:latest
+          imagePullPolicy: Always
+          command: [/bin/sh, /config/start-nlsr.sh]
+          env:
+            - name: NDN_CLIENT_TRANSPORT
+              value: unix:///run/nfd.sock
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+          volumeMounts:
+            - name: nfd-socket-dir
+              mountPath: /run
+            - name: nlsr-config
+              mountPath: /config
+              readOnly: true
+            - name: nlsr-state
+              mountPath: /var/lib/nlsr
+            - name: nlsr-state
+              mountPath: /root/.ndn
       volumes:
         - name: nfd-socket-dir
-          hostPath:
-            path: /var/run/nfd-k8s # ホストPCのこの場所をソケット共有用ディレクトリとする
-            type: DirectoryOrCreate
+          emptyDir: {}
+        - name: nlsr-config
+          configMap:
+            name: nfd-nlsr-config
+  # Retain sequence numbers and router keys across Pod recreation.
+  volumeClaimTemplates:
+    - metadata:
+        name: nlsr-state
+      spec:
+        storageClassName: longhorn
+        accessModes: [ReadWriteOnce]
+        resources:
+          requests:
+            storage: 128Mi
