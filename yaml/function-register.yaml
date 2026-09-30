@@ -2,7 +2,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: function-register-average-886e4d7c7794
+  name: function-register-average-78b50b573af4
   namespace: ndn
   annotations:
     argocd.argoproj.io/sync-wave: '1'
@@ -29,9 +29,13 @@ spec:
         - name: FUNCTION_NAME
           value: average
         - name: FUNCTION_CODE
-          value: |-
+          value: |
             let avg = (arg0 + arg1) / 2
             return avg
+        - name: FUNCTION_PREFERENCE_CPU
+          value: high
+        - name: FUNCTION_PREFERENCE_MEMORY
+          value: medium
         - name: MANAGER_REGISTER_NAME
           value: /Manager/register
         volumeMounts:
