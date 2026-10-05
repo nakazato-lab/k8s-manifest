@@ -2,8 +2,8 @@
 set -eu
 
 case "$POD_NAME" in
-  nfd-0) peer_service=nfd-peer-1 ;;
-  nfd-1) peer_service=nfd-peer-0 ;;
+  ndn-router-0) peer_service=nfd-peer-1 ;;
+  ndn-router-1) peer_service=nfd-peer-0 ;;
   *) echo "Unsupported router: $POD_NAME" >&2; exit 1 ;;
 esac
 

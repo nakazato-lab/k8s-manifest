@@ -24,7 +24,7 @@ metadata:
   name: nfd-peer-0
 spec:
   selector:
-    statefulset.kubernetes.io/pod-name: nfd-0
+    statefulset.kubernetes.io/pod-name: ndn-router-0
   ports:
     - name: ndn-tcp
       port: 6363
@@ -36,7 +36,7 @@ metadata:
   name: nfd-peer-1
 spec:
   selector:
-    statefulset.kubernetes.io/pod-name: nfd-1
+    statefulset.kubernetes.io/pod-name: ndn-router-1
   ports:
     - name: ndn-tcp
       port: 6363
@@ -59,7 +59,7 @@ spec:
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: nfd
+  name: ndn-router
   labels:
     app: nfd
 spec:
