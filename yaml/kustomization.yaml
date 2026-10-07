@@ -10,7 +10,6 @@ resources:
   - seed.yaml
   - spy-rbac.yaml
   - spy.yaml
-  - node-exporter.yaml
   - manager-rbac.yaml
   - manager.yaml
   - function-register.yaml
