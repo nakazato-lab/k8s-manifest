@@ -1,0 +1,110 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: kube1-bandwidth-server
+spec:
+  selector:
+    app: kube1-bandwidth-test
+    role: server
+  ports:
+    - name: iperf
+      port: 5201
+      targetPort: iperf
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: kube1-bandwidth-server
+spec:
+  backoffLimit: 0
+  activeDeadlineSeconds: 300
+  template:
+    metadata:
+      labels:
+        app: kube1-bandwidth-test
+        role: server
+    spec:
+      restartPolicy: Never
+      automountServiceAccountToken: false
+      nodeSelector:
+        kubernetes.io/os: linux
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchFields:
+                  - key: metadata.name
+                    operator: NotIn
+                    values: [kube1]
+      containers:
+        - name: iperf
+          image: alpine:3.22
+          command: [/bin/sh, -ec]
+          args:
+            - |
+              apk add --no-cache iperf3
+              exec iperf3 -s --forceflush
+          ports:
+            - name: iperf
+              containerPort: 5201
+          readinessProbe:
+            tcpSocket:
+              port: iperf
+            periodSeconds: 2
+          resources:
+            requests:
+              cpu: 100m
+              memory: 64Mi
+            limits:
+              cpu: "2"
+              memory: 256Mi
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: kube1-bandwidth-client
+spec:
+  backoffLimit: 0
+  activeDeadlineSeconds: 240
+  template:
+    metadata:
+      labels:
+        app: kube1-bandwidth-test
+        role: client
+    spec:
+      restartPolicy: Never
+      automountServiceAccountToken: false
+      nodeSelector:
+        kubernetes.io/os: linux
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchFields:
+                  - key: metadata.name
+                    operator: In
+                    values: [kube1]
+      containers:
+        - name: iperf
+          image: alpine:3.22
+          command: [/bin/sh, -ec]
+          args:
+            - |
+              apk add --no-cache iperf3
+              until nc -z -w 2 kube1-bandwidth-server 5201; do
+                sleep 2
+              done
+              echo "Baseline: waiting 15 seconds before load"
+              sleep 15
+              date -u
+              exec iperf3 -c kube1-bandwidth-server -P 4 -t "$TEST_SECONDS" -i 5 --forceflush
+          env:
+            - name: TEST_SECONDS
+              value: "60"
+          resources:
+            requests:
+              cpu: 100m
+              memory: 64Mi
+            limits:
+              cpu: "2"
+              memory: 256Mi
