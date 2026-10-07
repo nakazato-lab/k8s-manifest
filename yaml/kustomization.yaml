@@ -14,4 +14,3 @@ resources:
   - manager.yaml
   - function-register.yaml
   - function-invoke.yaml
-  - bandwidth-test.yaml
