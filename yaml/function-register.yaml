@@ -2,7 +2,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: function-register-average-3-e39646c6d58b
+  name: function-register-average-3-4f10a627e756
   namespace: ndn
   annotations:
     argocd.argoproj.io/sync-wave: '1'
@@ -36,6 +36,8 @@ spec:
           value: low
         - name: FUNCTION_PREFERENCE_MEMORY
           value: high
+        - name: FUNCTION_PREFERENCE_BANDWIDTH
+          value: medium
         - name: MANAGER_REGISTER_NAME
           value: /Manager/register
         volumeMounts:
@@ -50,7 +52,7 @@ spec:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: function-register-average-78b50b573af4
+  name: function-register-average-ef4d8cfb0bc5
   namespace: ndn
   annotations:
     argocd.argoproj.io/sync-wave: '1'
@@ -83,6 +85,8 @@ spec:
         - name: FUNCTION_PREFERENCE_CPU
           value: high
         - name: FUNCTION_PREFERENCE_MEMORY
+          value: medium
+        - name: FUNCTION_PREFERENCE_BANDWIDTH
           value: medium
         - name: MANAGER_REGISTER_NAME
           value: /Manager/register
