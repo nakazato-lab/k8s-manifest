@@ -3,6 +3,9 @@ kind: Service
 metadata:
   name: nfd
 spec:
+  # 自ノードにNFDがあればそこに必ず振り分ける
+  # https://kubernetes.io/blog/2025/08/27/kubernetes-v1-34-release/#preferclose-traffic-distribution-is-deprecated
+  trafficDistribution: PreferSameNode
   selector:
     app: nfd
   ports:
@@ -17,7 +20,6 @@ metadata:
 data:
   ADDRESS: nfd:6363
 ---
-# Per-router Services keep peer addresses stable when a Pod is recreated.
 apiVersion: v1
 kind: Service
 metadata:
@@ -147,7 +149,6 @@ spec:
         - name: nlsr-config
           configMap:
             name: nfd-nlsr-config
-  # Retain sequence numbers and router keys across Pod recreation.
   volumeClaimTemplates:
     - metadata:
         name: nlsr-state
