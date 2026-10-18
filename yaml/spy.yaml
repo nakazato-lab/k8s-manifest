@@ -2,7 +2,6 @@ apiVersion: apps/v1
 kind: DaemonSet
 metadata:
   name: spy-daemonset
-  namespace: default
   labels:
     app: spy
 spec:
@@ -19,128 +18,95 @@ spec:
       nodeSelector:
         kubernetes.io/os: linux
       serviceAccountName: spy-service-account
-      
-      # =========================================================
-      # 1. 初期化コンテナ（NFDのIP取得 ＆ 起動待ち）
-      # =========================================================
       initContainers:
-      - name: wait-for-nfd-ip
-        image: busybox:1.36
-        imagePullPolicy: IfNotPresent
-        command: 
-        - 'sh'
-        - '-c'
-        - |
-            while true; do
-              ENDPOINT=$(cat /etc/ndn-config/ADDRESS 2>/dev/null || echo 'not available yet')
-              echo "NFD endpoint: $ENDPOINT"
-
-              if [ "$ENDPOINT" != "not available yet" ]; then
-                NFD_ADDR=$ENDPOINT
-                break
-              fi
-              sleep 10
-            done
-          
-            echo "Target NFD IP found: $NFD_ADDR"
-          
-            NFD_HOST=${NFD_ADDR%:*}
-            NFD_PORT=${NFD_ADDR##*:}
-            until nc -z -w 3 "$NFD_HOST" "$NFD_PORT"; do
-              echo "waiting for NFD at $NFD_ADDR..."
-              sleep 10
-            done
-        volumeMounts:
-        - name: nfd-endpoint
-          mountPath: /etc/ndn-config
-          readOnly: true
-          
+        - name: nfd-address
+          image: ghcr.io/nakazato-lab/ndn-dhcp/ndn-dhcp-client:latest
+          imagePullPolicy: Always
+          env:
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+          volumeMounts:
+            - name: nfd-endpoint
+              mountPath: /etc/ndn-config
       containers:
-      - name: spy
-        image: ghcr.io/nakazato-lab/ndn_resorce_placement/ndn-spy:latest #コンテナイメージを書く、コンテナの中にspy.pyの実行を組み込む
-        imagePullPolicy: Always
-        env:
-        - name: NODE_EXPORTER_URL
-          value: http://127.0.0.1:9100/metrics
-        - name: NODE_NAME
-          valueFrom:
-            fieldRef:
-              fieldPath: spec.nodeName
-        volumeMounts:
-        - name: nfd-endpoint
-          mountPath: /etc/ndn-config
-          readOnly: true
-        # ホストノード自体のリソース（CPU/メモリ）を取得するためにマウント
-        - name: host-proc
-          mountPath: /host/proc
-          readOnly: true
-
-      - name: node-exporter
-        image: quay.io/prometheus/node-exporter:v1.12.1
-        imagePullPolicy: IfNotPresent
-        args:
-          - --web.listen-address=:9100
-          - --path.procfs=/host/proc
-          - --path.sysfs=/host/sys
-          - --collector.disable-defaults
-          - --collector.netdev
-          - --collector.netclass
-          - --collector.netclass.ignore-invalid-speed
-        ports:
-          - name: metrics
-            containerPort: 9100
-            hostPort: 9100
-            protocol: TCP
-        securityContext:
-          runAsNonRoot: true
-          runAsUser: 65534
-          runAsGroup: 65534
-          seccompProfile:
-            type: RuntimeDefault
-          allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: true
-          capabilities:
-            drop: [ALL]
-        resources:
-          requests:
-            cpu: 10m
-            memory: 32Mi
-          limits:
-            memory: 128Mi
-        # Probes only check HTTP availability; avoid truncating /metrics responses.
-        readinessProbe:
-          httpGet:
-            path: /
-            port: metrics
-          periodSeconds: 10
-          timeoutSeconds: 5
-        livenessProbe:
-          httpGet:
-            path: /
-            port: metrics
-          initialDelaySeconds: 10
-          periodSeconds: 30
-          timeoutSeconds: 5
-        volumeMounts:
-          - name: host-proc
-            mountPath: /host/proc
-            readOnly: true
-          - name: host-sys
-            mountPath: /host/sys
-            readOnly: true
-
+        - name: spy
+          image: ghcr.io/nakazato-lab/ndn_resorce_placement/ndn-spy:latest
+          imagePullPolicy: Always
+          env:
+            - name: NODE_EXPORTER_URL
+              value: http://127.0.0.1:9100/metrics
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+          volumeMounts:
+            - name: nfd-endpoint
+              mountPath: /etc/ndn-config
+            - name: host-proc
+              mountPath: /host/proc
+              readOnly: true
+        - name: node-exporter
+          image: quay.io/prometheus/node-exporter:v1.12.1
+          imagePullPolicy: IfNotPresent
+          args:
+            - --web.listen-address=:9100
+            - --path.procfs=/host/proc
+            - --path.sysfs=/host/sys
+            - --collector.disable-defaults
+            - --collector.netdev
+            - --collector.netclass
+            - --collector.netclass.ignore-invalid-speed
+          ports:
+            - name: metrics
+              containerPort: 9100
+              hostPort: 9100
+              protocol: TCP
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 65534
+            runAsGroup: 65534
+            seccompProfile:
+              type: RuntimeDefault
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              memory: 128Mi
+          readinessProbe:
+            httpGet:
+              path: /
+              port: metrics
+            periodSeconds: 10
+            timeoutSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /
+              port: metrics
+            initialDelaySeconds: 10
+            periodSeconds: 30
+            timeoutSeconds: 5
+          volumeMounts:
+            - name: host-proc
+              mountPath: /host/proc
+              readOnly: true
+            - name: host-sys
+              mountPath: /host/sys
+              readOnly: true
       volumes:
-      # NFDのIPが格納されているConfigMap
-      - name: nfd-endpoint
-        configMap:
-          name: nfd-client-config
-          optional: true
-      # ノード物理マシンのリソース情報を覗くためのホストパス
-      - name: host-proc
-        hostPath:
-          path: /proc
-          type: Directory
-      - name: host-sys
-        hostPath:
-          path: /sys
-          type: Directory
+        - name: nfd-endpoint
+          emptyDir: {}
+        - name: host-proc
+          hostPath:
+            path: /proc
+            type: Directory
+        - name: host-sys
+          hostPath:
+            path: /sys
+            type: Directory

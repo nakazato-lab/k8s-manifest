@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: ndn-dhcp-service-account
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: ndn-dhcp-router-reader
+rules:
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: ndn-dhcp-router-reader
+subjects:
+  - kind: ServiceAccount
+    name: ndn-dhcp-service-account
+roleRef:
+  kind: Role
+  name: ndn-dhcp-router-reader
+  apiGroup: rbac.authorization.k8s.io

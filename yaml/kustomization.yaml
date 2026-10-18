@@ -6,6 +6,8 @@ namespace: ndn
 resources:
   - ../conf
   - nfd.yaml
+  - dhcp-rbac.yaml
+  - dhcp.yaml
   - seed-rbac.yaml
   - seed.yaml
   - spy-rbac.yaml

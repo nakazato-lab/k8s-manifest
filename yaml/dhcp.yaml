@@ -1,0 +1,48 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ndn-dhcp
+spec:
+  selector:
+    app: ndn-dhcp
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ndn-dhcp
+  labels:
+    app: ndn-dhcp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ndn-dhcp
+  template:
+    metadata:
+      labels:
+        app: ndn-dhcp
+    spec:
+      serviceAccountName: ndn-dhcp-service-account
+      containers:
+        - name: server
+          image: ghcr.io/nakazato-lab/ndn-dhcp/ndn-dhcp-server:latest
+          imagePullPolicy: Always
+          ports:
+            - name: grpc
+              containerPort: 9090
+          readinessProbe:
+            tcpSocket:
+              port: grpc
+        - name: sidecar
+          image: ghcr.io/nakazato-lab/ndn-dhcp/ndn-dhcp-sidecar:latest
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 8080
+          readinessProbe:
+            tcpSocket:
+              port: http
