@@ -9,6 +9,7 @@ esac
 
 # Run in parallel so both NFDs can become ready before either connects to its peer.
 (
+  export HOME=/tmp/nfdc
   until timeout 5 nfdc status >/dev/null 2>&1; do sleep 2; done
   while true; do
     peer_ip=$(getent ahostsv4 "$peer_service.$POD_NAMESPACE.svc" | awk 'NR == 1 {print $1}')
