@@ -15,6 +15,18 @@ spec:
         app: function-register
     spec:
       restartPolicy: Never
+      initContainers:
+      - name: nfd-address
+        image: ghcr.io/nakazato-lab/ndn-dhcp/ndn-dhcp-client:latest
+        imagePullPolicy: Always
+        env:
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        volumeMounts:
+        - name: nfd-endpoint
+          mountPath: /etc/ndn-config
       containers:
       - name: registerer
         image: ghcr.io/nakazato-lab/function-utils/ndn-function-registerer:latest
@@ -48,8 +60,7 @@ spec:
           readOnly: true
       volumes:
       - name: nfd-endpoint
-        configMap:
-          name: nfd-client-config
+        emptyDir: {}
 ---
 apiVersion: batch/v1
 kind: Job
@@ -67,6 +78,18 @@ spec:
         app: function-register
     spec:
       restartPolicy: Never
+      initContainers:
+      - name: nfd-address
+        image: ghcr.io/nakazato-lab/ndn-dhcp/ndn-dhcp-client:latest
+        imagePullPolicy: Always
+        env:
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        volumeMounts:
+        - name: nfd-endpoint
+          mountPath: /etc/ndn-config
       containers:
       - name: registerer
         image: ghcr.io/nakazato-lab/function-utils/ndn-function-registerer:latest
@@ -100,8 +123,7 @@ spec:
           readOnly: true
       volumes:
       - name: nfd-endpoint
-        configMap:
-          name: nfd-client-config
+        emptyDir: {}
 ---
 apiVersion: batch/v1
 kind: Job
@@ -119,6 +141,18 @@ spec:
         app: function-register
     spec:
       restartPolicy: Never
+      initContainers:
+      - name: nfd-address
+        image: ghcr.io/nakazato-lab/ndn-dhcp/ndn-dhcp-client:latest
+        imagePullPolicy: Always
+        env:
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        volumeMounts:
+        - name: nfd-endpoint
+          mountPath: /etc/ndn-config
       containers:
       - name: registerer
         image: ghcr.io/nakazato-lab/function-utils/ndn-function-registerer:latest
@@ -152,6 +186,5 @@ spec:
           readOnly: true
       volumes:
       - name: nfd-endpoint
-        configMap:
-          name: nfd-client-config
+        emptyDir: {}
 
