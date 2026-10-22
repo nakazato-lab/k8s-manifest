@@ -2,6 +2,58 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
+  name: function-register-10x-711cf1c13cce
+  namespace: ndn
+  annotations:
+    argocd.argoproj.io/sync-wave: '1'
+spec:
+  backoffLimit: 2
+  activeDeadlineSeconds: 180
+  template:
+    metadata:
+      labels:
+        app: function-register
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: registerer
+        image: ghcr.io/nakazato-lab/function-utils/ndn-function-registerer:latest
+        imagePullPolicy: Always
+        command:
+        - python
+        - -u
+        - /app/register.py
+        env:
+        - name: NFD_CONFIG_PATH
+          value: /etc/ndn-config/ADDRESS
+        - name: FUNCTION_NAME
+          value: 10x
+        - name: FUNCTION_RUNTIME
+          value: python
+        - name: FUNCTION_CODE
+          value: |
+            def main(arg0):
+                return arg0 * 10
+        - name: FUNCTION_PREFERENCE_CPU
+          value: medium
+        - name: FUNCTION_PREFERENCE_MEMORY
+          value: medium
+        - name: FUNCTION_PREFERENCE_BANDWIDTH
+          value: medium
+        - name: MANAGER_REGISTER_NAME
+          value: /Manager/register
+        volumeMounts:
+        - name: nfd-endpoint
+          mountPath: /etc/ndn-config
+          readOnly: true
+      volumes:
+      - name: nfd-endpoint
+        configMap:
+          name: nfd-client-config
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
   name: function-register-average-3-374ef7f85f6e
   namespace: ndn
   annotations:
