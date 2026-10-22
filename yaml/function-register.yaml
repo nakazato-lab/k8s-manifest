@@ -2,7 +2,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: function-register-average-3-f0ef687a85c9
+  name: function-register-average-3-374ef7f85f6e
   namespace: ndn
   annotations:
     argocd.argoproj.io/sync-wave: '1'
@@ -15,18 +15,6 @@ spec:
         app: function-register
     spec:
       restartPolicy: Never
-      initContainers:
-      - name: nfd-address
-        image: ghcr.io/nakazato-lab/ndn-dhcp/ndn-dhcp-client:latest
-        imagePullPolicy: Always
-        env:
-        - name: NODE_NAME
-          valueFrom:
-            fieldRef:
-              fieldPath: spec.nodeName
-        volumeMounts:
-        - name: nfd-endpoint
-          mountPath: /etc/ndn-config
       containers:
       - name: registerer
         image: ghcr.io/nakazato-lab/function-utils/ndn-function-registerer:latest
@@ -40,6 +28,8 @@ spec:
           value: /etc/ndn-config/ADDRESS
         - name: FUNCTION_NAME
           value: average-3
+        - name: FUNCTION_RUNTIME
+          value: ndn
         - name: FUNCTION_CODE
           value: |
             let avg = (arg0 + arg1 + arg2) / 3
@@ -58,12 +48,13 @@ spec:
           readOnly: true
       volumes:
       - name: nfd-endpoint
-        emptyDir: {}
+        configMap:
+          name: nfd-client-config
 ---
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: function-register-average-074aab6fa5d9
+  name: function-register-average-9ad64126373f
   namespace: ndn
   annotations:
     argocd.argoproj.io/sync-wave: '1'
@@ -76,18 +67,6 @@ spec:
         app: function-register
     spec:
       restartPolicy: Never
-      initContainers:
-      - name: nfd-address
-        image: ghcr.io/nakazato-lab/ndn-dhcp/ndn-dhcp-client:latest
-        imagePullPolicy: Always
-        env:
-        - name: NODE_NAME
-          valueFrom:
-            fieldRef:
-              fieldPath: spec.nodeName
-        volumeMounts:
-        - name: nfd-endpoint
-          mountPath: /etc/ndn-config
       containers:
       - name: registerer
         image: ghcr.io/nakazato-lab/function-utils/ndn-function-registerer:latest
@@ -101,6 +80,8 @@ spec:
           value: /etc/ndn-config/ADDRESS
         - name: FUNCTION_NAME
           value: average
+        - name: FUNCTION_RUNTIME
+          value: ndn
         - name: FUNCTION_CODE
           value: |
             let avg = (arg0 + arg1) / 2
@@ -119,5 +100,6 @@ spec:
           readOnly: true
       volumes:
       - name: nfd-endpoint
-        emptyDir: {}
+        configMap:
+          name: nfd-client-config
 
