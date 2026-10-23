@@ -11,13 +11,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates
 
 RUN git clone --depth 1 --branch "${PSYNC_VERSION}" https://github.com/named-data/PSync.git /src/PSync \
     && cd /src/PSync \
-    && ./waf configure --prefix=/usr --libdir=/usr/lib --disable-static \
+    && ./waf configure --prefix=/usr --libdir=/usr/lib \
     && ./waf build \
     && ./waf install
 
 RUN git clone --depth 1 --branch "NLSR-${NLSR_VERSION}" https://github.com/named-data/NLSR.git /src/NLSR \
     && cd /src/NLSR \
-    && ./waf configure --prefix=/usr --libdir=/usr/lib --disable-static --with-psync \
+    && ./waf configure --prefix=/usr --libdir=/usr/lib --with-psync \
     && ./waf build \
     && ./waf install
 
