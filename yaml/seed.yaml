@@ -31,7 +31,7 @@ spec:
           image: ghcr.io/nakazato-lab/ndn-tools-seed-python/ndn-seed:latest
           imagePullPolicy: Always
           env:
-            - name: FUNCTION_IMAGE
+            - name: NDN_FUNCTION_IMAGE
               value: ghcr.io/nakazato-lab/ndn-tools-seed-python/ndn-function-runtime:latest
             - name: SIDECAR_IMAGE
               value: ghcr.io/nakazato-lab/ndn-tools-seed-python/ndn-function-sidecar:latest
