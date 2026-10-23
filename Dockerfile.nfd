@@ -6,6 +6,7 @@ USER root
 # The upstream image keeps its sample configuration under /config, which is a
 # ConfigMap mount in the Pod. Store the generated configuration outside it.
 RUN apt-get update && apt-get install -y --no-install-recommends coreutils mawk sed \
+    && mkdir -p /etc/ndn \
     && cp /config/nfd.conf /etc/ndn/nfd.conf \
     && sed -i 's|path /run/nfd/nfd.sock|path /run/nfd.sock|g' /etc/ndn/nfd.conf \
     && sed -i '/^[[:space:]]*auto_prefix_propagate[[:space:]]*$/,/^[[:space:]]*}[[:space:]]*$/d' /etc/ndn/nfd.conf \
