@@ -2,7 +2,9 @@
 set -eu
 
 # Keep NFD's keychain out of the read-only /config ConfigMap mount.
-export HOME=/tmp/nfdc
+# nfdc uses a separate HOME below because both processes otherwise contend for
+# the same SQLite PIB database.
+export HOME=/tmp/nfd-home
 mkdir -p "$HOME"
 
 case "$POD_NAME" in
@@ -15,6 +17,8 @@ esac
 # TCP face has the peer's ephemeral source port, so it cannot satisfy that match.
 # Keep retrying until this router owns an outbound, permanent face to the peer.
 (
+  export HOME=/tmp/nfdc-home
+  mkdir -p "$HOME"
   until timeout 5 nfdc status >/dev/null 2>&1; do sleep 2; done
   while true; do
     peer_ip=$(getent ahostsv4 "$peer_service.$POD_NAMESPACE.svc" | awk 'NR == 1 {print $1}')
