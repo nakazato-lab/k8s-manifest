@@ -65,13 +65,13 @@ spec:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: function-register-average-3-374ef7f85f6e
+  name: function-delete-average-3-374ef7f85f6e
   namespace: ndn
   annotations:
     argocd.argoproj.io/sync-wave: '1'
 spec:
   backoffLimit: 2
-  activeDeadlineSeconds: 180
+  activeDeadlineSeconds: 300
   template:
     metadata:
       labels:
@@ -105,18 +105,10 @@ spec:
           value: average-3
         - name: FUNCTION_RUNTIME
           value: ndn
-        - name: FUNCTION_CODE
-          value: |
-            let avg = (arg0 + arg1 + arg2) / 3
-            return avg
-        - name: FUNCTION_PREFERENCE_CPU
-          value: low
-        - name: FUNCTION_PREFERENCE_MEMORY
-          value: high
-        - name: FUNCTION_PREFERENCE_BANDWIDTH
-          value: medium
         - name: MANAGER_REGISTER_NAME
           value: /Manager/register
+        - name: FUNCTION_OPERATION
+          value: DELETE
         volumeMounts:
         - name: nfd-endpoint
           mountPath: /etc/ndn-config
@@ -128,13 +120,13 @@ spec:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: function-register-average-9ad64126373f
+  name: function-delete-average-9ad64126373f
   namespace: ndn
   annotations:
     argocd.argoproj.io/sync-wave: '1'
 spec:
   backoffLimit: 2
-  activeDeadlineSeconds: 180
+  activeDeadlineSeconds: 300
   template:
     metadata:
       labels:
@@ -168,18 +160,10 @@ spec:
           value: average
         - name: FUNCTION_RUNTIME
           value: ndn
-        - name: FUNCTION_CODE
-          value: |
-            let avg = (arg0 + arg1) / 2
-            return avg
-        - name: FUNCTION_PREFERENCE_CPU
-          value: high
-        - name: FUNCTION_PREFERENCE_MEMORY
-          value: medium
-        - name: FUNCTION_PREFERENCE_BANDWIDTH
-          value: medium
         - name: MANAGER_REGISTER_NAME
           value: /Manager/register
+        - name: FUNCTION_OPERATION
+          value: DELETE
         volumeMounts:
         - name: nfd-endpoint
           mountPath: /etc/ndn-config
