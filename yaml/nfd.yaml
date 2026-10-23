@@ -67,6 +67,10 @@ spec:
           imagePullPolicy: Always
           command: [/bin/sh, /config/start-nfd.sh]
           env:
+            # The image defaults HOME to /config, which is a read-only ConfigMap.
+            # NFD creates $HOME/.ndn during startup, so provide it a writable home.
+            - name: HOME
+              value: /var/lib/nfd
             - name: NDN_CLIENT_TRANSPORT
               value: unix:///run/nfd.sock
             - name: POD_NAME
@@ -93,6 +97,8 @@ spec:
           volumeMounts:
             - name: nfd-socket-dir
               mountPath: /run
+            - name: nfd-state
+              mountPath: /var/lib/nfd
             - name: nlsr-config
               mountPath: /config
               readOnly: true
@@ -123,6 +129,8 @@ spec:
               mountPath: /root/.ndn
       volumes:
         - name: nfd-socket-dir
+          emptyDir: {}
+        - name: nfd-state
           emptyDir: {}
         - name: nlsr-config
           configMap:
