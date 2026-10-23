@@ -3,6 +3,8 @@ FROM ghcr.io/named-data/nfd:24.07
 
 USER root
 
+ENV HOME=/tmp/nfdc
+
 # The upstream image keeps its sample configuration under /config, which is a
 # ConfigMap mount in the Pod. Store the generated configuration outside it.
 RUN apt-get update && apt-get install -y --no-install-recommends coreutils mawk sed \

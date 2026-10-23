@@ -1,6 +1,10 @@
 #!/bin/sh
 set -eu
 
+# Keep NFD's keychain out of the read-only /config ConfigMap mount.
+export HOME=/tmp/nfdc
+mkdir -p "$HOME"
+
 case "$POD_NAME" in
   ndn-router-0) peer_service=nfd-peer-1 ;;
   ndn-router-1) peer_service=nfd-peer-0 ;;
@@ -11,7 +15,6 @@ esac
 # TCP face has the peer's ephemeral source port, so it cannot satisfy that match.
 # Keep retrying until this router owns an outbound, permanent face to the peer.
 (
-  export HOME=/tmp/nfdc
   until timeout 5 nfdc status >/dev/null 2>&1; do sleep 2; done
   while true; do
     peer_ip=$(getent ahostsv4 "$peer_service.$POD_NAMESPACE.svc" | awk 'NR == 1 {print $1}')
