@@ -25,6 +25,8 @@ FROM ghcr.io/named-data/nfd:24.07
 
 USER root
 
+ENV HOME=/root
+
 RUN apt-get update && apt-get install -y --no-install-recommends libboost-iostreams1.83.0 netcat-openbsd \
     && rm -rf /var/lib/apt/lists/*
 
