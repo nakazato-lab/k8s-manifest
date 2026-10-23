@@ -1,12 +1,39 @@
-FROM ubuntu:24.04
-ENV DEBIAN_FRONTEND=noninteractive
+# Build NLSR from the release that is compatible with NFD 24.07. The old
+# named-data PPA has no Noble repository and provided an incompatible package
+# pair in the previous image.
+FROM ghcr.io/named-data/ndn-cxx-build:0.9.0 AS build
 
-RUN apt-get update && apt-get install -y --no-install-recommends software-properties-common ca-certificates gpg-agent sudo \
-    && add-apt-repository ppa:named-data/ppa \
-    && apt-get update && apt-get install -y --no-install-recommends nlsr ndnsec netcat-openbsd \
+ARG PSYNC_VERSION=0.5.0
+ARG NLSR_VERSION=24.08
+
+RUN apt-get update && apt-get install -y --no-install-recommends git libboost-iostreams-dev \
     && rm -rf /var/lib/apt/lists/*
+
+RUN git clone --depth 1 --branch "${PSYNC_VERSION}" https://github.com/named-data/PSync.git /src/PSync \
+    && cd /src/PSync \
+    && ./waf configure --prefix=/usr --libdir=/usr/lib --disable-static \
+    && ./waf build \
+    && ./waf install
+
+RUN git clone --depth 1 --branch "NLSR-${NLSR_VERSION}" https://github.com/named-data/NLSR.git /src/NLSR \
+    && cd /src/NLSR \
+    && ./waf configure --prefix=/usr --libdir=/usr/lib --disable-static --with-psync \
+    && ./waf build \
+    && ./waf install
+
+FROM ghcr.io/named-data/nfd:24.07
+
+USER root
+
+RUN apt-get update && apt-get install -y --no-install-recommends libboost-iostreams1.83.0 netcat-openbsd \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY --from=build /usr/bin/nlsr /usr/bin/nlsr
+COPY --from=build /usr/lib/libPSync.so* /usr/lib/
+
+RUN ldconfig
 
 ENV NDN_CLIENT_TRANSPORT=unix:///run/nfd.sock
 
-# The configuration and startup script are mounted by the StatefulSet.
+# The Kubernetes Pod command starts /config/start-nlsr.sh.
 CMD ["/bin/sh", "/config/start-nlsr.sh"]
