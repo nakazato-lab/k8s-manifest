@@ -2,7 +2,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: function-register-ten-x-9e6a5df6a27e
+  name: function-register-ten-x-086e86f94d10
   namespace: ndn
   annotations:
     argocd.argoproj.io/sync-wave: '1'
@@ -44,8 +44,10 @@ spec:
           value: python
         - name: FUNCTION_CODE
           value: |
-            let result = arg0 * 10
-            return result
+            import sys
+
+            arg0 = int(sys.argv[1])
+            print(arg0 * 10)
         - name: FUNCTION_PREFERENCE_CPU
           value: medium
         - name: FUNCTION_PREFERENCE_MEMORY
