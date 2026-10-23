@@ -2,7 +2,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: function-invoke-use-10x-a710eb22d7ce
+  name: function-invoke-use-ten-x-e8208e2d7b11
   namespace: ndn
   annotations:
     argocd.argoproj.io/sync-wave: '2'
@@ -39,13 +39,13 @@ spec:
         - name: NFD_CONFIG_PATH
           value: /etc/ndn-config/ADDRESS
         - name: NDN_SCRIPT_NAME
-          value: use_10x.ndn
+          value: use_ten_x.ndn
         - name: NDN_SCRIPT_SOURCE
           value: |2
-              let first = 10x(10)
+              let first = ten_x(10)
               print first
 
-              let second = 10x(20)
+              let second = ten_x(20)
               print second
         volumeMounts:
         - name: nfd-endpoint
