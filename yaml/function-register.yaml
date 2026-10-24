@@ -2,6 +2,68 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
+  name: function-register-capital-japan-e66e50c3a6a4
+  namespace: ndn
+  annotations:
+    argocd.argoproj.io/sync-wave: '1'
+spec:
+  backoffLimit: 2
+  activeDeadlineSeconds: 180
+  template:
+    metadata:
+      labels:
+        app: function-register
+    spec:
+      restartPolicy: Never
+      initContainers:
+      - name: nfd-address
+        image: ghcr.io/nakazato-lab/ndn-dhcp/ndn-dhcp-client:latest
+        imagePullPolicy: Always
+        env:
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        volumeMounts:
+        - name: nfd-endpoint
+          mountPath: /etc/ndn-config
+      containers:
+      - name: registerer
+        image: ghcr.io/nakazato-lab/function-utils/ndn-function-registerer:latest
+        imagePullPolicy: Always
+        command:
+        - python
+        - -u
+        - /app/register.py
+        env:
+        - name: NFD_CONFIG_PATH
+          value: /etc/ndn-config/ADDRESS
+        - name: FUNCTION_NAME
+          value: capital_japan
+        - name: FUNCTION_RUNTIME
+          value: python
+        - name: FUNCTION_CODE
+          value: |
+            print("Tokyo")
+        - name: FUNCTION_PREFERENCE_CPU
+          value: medium
+        - name: FUNCTION_PREFERENCE_MEMORY
+          value: medium
+        - name: FUNCTION_PREFERENCE_BANDWIDTH
+          value: medium
+        - name: MANAGER_REGISTER_NAME
+          value: /Manager/register
+        volumeMounts:
+        - name: nfd-endpoint
+          mountPath: /etc/ndn-config
+          readOnly: true
+      volumes:
+      - name: nfd-endpoint
+        emptyDir: {}
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
   name: function-register-ten-x-086e86f94d10
   namespace: ndn
   annotations:
