@@ -55,7 +55,7 @@ spec:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: function-invoke-use-rename-to-kanji-7a57f9646e76
+  name: function-invoke-use-rename-to-kanji-41bdfdae0c75
   namespace: ndn
   annotations:
     argocd.argoproj.io/sync-wave: '2'
@@ -95,7 +95,7 @@ spec:
           value: use_rename_to_kanji.ndn
         - name: NDN_SCRIPT_SOURCE
           value: |
-            let result = rename_to_kanji("/capital/japan")
+            let result = rename_to_kanji(interest "/capital/japan")
             print result
         volumeMounts:
         - name: nfd-endpoint
