@@ -2,7 +2,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: function-invoke-use-capital-japan-021f90078f30
+  name: function-invoke-use-capital-japan-49c0f23fc3c2
   namespace: ndn
   annotations:
     argocd.argoproj.io/sync-wave: '2'
@@ -42,7 +42,7 @@ spec:
           value: use_capital_japan.ndn
         - name: NDN_SCRIPT_SOURCE
           value: |
-            let capital = interest "/capital_japan"
+            let capital = interest "/capital/japan"
             print capital
         volumeMounts:
         - name: nfd-endpoint
