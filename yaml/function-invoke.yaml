@@ -161,6 +161,59 @@ spec:
 apiVersion: batch/v1
 kind: Job
 metadata:
+  name: function-invoke-use-sqrt-numpy-172732a441bd
+  namespace: ndn
+  annotations:
+    argocd.argoproj.io/sync-wave: '2'
+spec:
+  backoffLimit: 2
+  activeDeadlineSeconds: 300
+  template:
+    metadata:
+      labels:
+        app: function-invoke
+    spec:
+      restartPolicy: Never
+      initContainers:
+      - name: nfd-address
+        image: ghcr.io/nakazato-lab/ndn-dhcp/ndn-dhcp-client:latest
+        imagePullPolicy: Always
+        env:
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        volumeMounts:
+        - name: nfd-endpoint
+          mountPath: /etc/ndn-config
+      containers:
+      - name: invoker
+        image: ghcr.io/nakazato-lab/function-utils/ndn-function-invoker:latest
+        imagePullPolicy: Always
+        command:
+        - python
+        - -u
+        - /app/invoke.py
+        env:
+        - name: NFD_CONFIG_PATH
+          value: /etc/ndn-config/ADDRESS
+        - name: NDN_SCRIPT_NAME
+          value: use_sqrt_numpy.ndn
+        - name: NDN_SCRIPT_SOURCE
+          value: |
+            let result = sqrt_numpy(16)
+            print result
+        volumeMounts:
+        - name: nfd-endpoint
+          mountPath: /etc/ndn-config
+          readOnly: true
+      volumes:
+      - name: nfd-endpoint
+        emptyDir: {}
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
   name: function-invoke-use-ten-x-e8208e2d7b11
   namespace: ndn
   annotations:
