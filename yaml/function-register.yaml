@@ -15,6 +15,13 @@ spec:
         app: function-register
     spec:
       restartPolicy: Never
+      topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: ScheduleAnyway
+        labelSelector:
+          matchLabels:
+            app: function-register
       initContainers:
       - name: nfd-address
         image: ghcr.io/nakazato-lab/ndn-dhcp/ndn-dhcp-client:latest
@@ -79,6 +86,13 @@ spec:
         app: function-register
     spec:
       restartPolicy: Never
+      topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: ScheduleAnyway
+        labelSelector:
+          matchLabels:
+            app: function-register
       initContainers:
       - name: nfd-address
         image: ghcr.io/nakazato-lab/ndn-dhcp/ndn-dhcp-client:latest
@@ -643,6 +657,13 @@ spec:
         app: function-register
     spec:
       restartPolicy: Never
+      topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: ScheduleAnyway
+        labelSelector:
+          matchLabels:
+            app: function-register
       initContainers:
       - name: nfd-address
         image: ghcr.io/nakazato-lab/ndn-dhcp/ndn-dhcp-client:latest
@@ -713,6 +734,13 @@ spec:
         app: function-register
     spec:
       restartPolicy: Never
+      topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: ScheduleAnyway
+        labelSelector:
+          matchLabels:
+            app: function-register
       initContainers:
       - name: nfd-address
         image: ghcr.io/nakazato-lab/ndn-dhcp/ndn-dhcp-client:latest
@@ -783,6 +811,13 @@ spec:
         app: function-register
     spec:
       restartPolicy: Never
+      topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: ScheduleAnyway
+        labelSelector:
+          matchLabels:
+            app: function-register
       initContainers:
       - name: nfd-address
         image: ghcr.io/nakazato-lab/ndn-dhcp/ndn-dhcp-client:latest
