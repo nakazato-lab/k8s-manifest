@@ -31,6 +31,9 @@ spec:
         - name: manager
           image: ghcr.io/nakazato-lab/ndn_resorce_placement/ndn-manager:latest
           imagePullPolicy: Always
+          env:
+            - name: NFD_NAME_PATH
+              value: /etc/ndn-config/ROUTER_NAME
           volumeMounts:
             - name: nfd-endpoint
               mountPath: /etc/ndn-config
