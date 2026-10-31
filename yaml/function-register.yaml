@@ -45,6 +45,8 @@ spec:
         env:
         - name: NFD_CONFIG_PATH
           value: /etc/ndn-config/ADDRESS
+        - name: NFD_NAME_PATH
+          value: /etc/ndn-config/ROUTER_NAME
         - name: FUNCTION_NAME
           value: /capital/japan
         - name: FUNCTION_RUNTIME
@@ -116,6 +118,8 @@ spec:
         env:
         - name: NFD_CONFIG_PATH
           value: /etc/ndn-config/ADDRESS
+        - name: NFD_NAME_PATH
+          value: /etc/ndn-config/ROUTER_NAME
         - name: FUNCTION_NAME
           value: rename_city_to_kanji
         - name: FUNCTION_RUNTIME
@@ -687,6 +691,8 @@ spec:
         env:
         - name: NFD_CONFIG_PATH
           value: /etc/ndn-config/ADDRESS
+        - name: NFD_NAME_PATH
+          value: /etc/ndn-config/ROUTER_NAME
         - name: FUNCTION_NAME
           value: rename_to_kanji
         - name: FUNCTION_RUNTIME
@@ -764,6 +770,8 @@ spec:
         env:
         - name: NFD_CONFIG_PATH
           value: /etc/ndn-config/ADDRESS
+        - name: NFD_NAME_PATH
+          value: /etc/ndn-config/ROUTER_NAME
         - name: FUNCTION_NAME
           value: sqrt_numpy
         - name: FUNCTION_RUNTIME
@@ -841,6 +849,8 @@ spec:
         env:
         - name: NFD_CONFIG_PATH
           value: /etc/ndn-config/ADDRESS
+        - name: NFD_NAME_PATH
+          value: /etc/ndn-config/ROUTER_NAME
         - name: FUNCTION_NAME
           value: ten_x
         - name: FUNCTION_RUNTIME
@@ -908,6 +918,8 @@ spec:
         env:
         - name: NFD_CONFIG_PATH
           value: /etc/ndn-config/ADDRESS
+        - name: NFD_NAME_PATH
+          value: /etc/ndn-config/ROUTER_NAME
         - name: FUNCTION_NAME
           value: capital_japan
         - name: FUNCTION_RUNTIME
@@ -963,6 +975,8 @@ spec:
         env:
         - name: NFD_CONFIG_PATH
           value: /etc/ndn-config/ADDRESS
+        - name: NFD_NAME_PATH
+          value: /etc/ndn-config/ROUTER_NAME
         - name: FUNCTION_NAME
           value: 10x
         - name: FUNCTION_RUNTIME
@@ -1018,6 +1032,8 @@ spec:
         env:
         - name: NFD_CONFIG_PATH
           value: /etc/ndn-config/ADDRESS
+        - name: NFD_NAME_PATH
+          value: /etc/ndn-config/ROUTER_NAME
         - name: FUNCTION_NAME
           value: average-3
         - name: FUNCTION_RUNTIME
@@ -1073,6 +1089,8 @@ spec:
         env:
         - name: NFD_CONFIG_PATH
           value: /etc/ndn-config/ADDRESS
+        - name: NFD_NAME_PATH
+          value: /etc/ndn-config/ROUTER_NAME
         - name: FUNCTION_NAME
           value: average
         - name: FUNCTION_RUNTIME

@@ -45,6 +45,8 @@ spec:
         env:
         - name: NFD_CONFIG_PATH
           value: /etc/ndn-config/ADDRESS
+        - name: NFD_NAME_PATH
+          value: /etc/ndn-config/ROUTER_NAME
         - name: NDN_SCRIPT_NAME
           value: use_capital_japan.ndn
         - name: NDN_SCRIPT_SOURCE
@@ -105,6 +107,8 @@ spec:
         env:
         - name: NFD_CONFIG_PATH
           value: /etc/ndn-config/ADDRESS
+        - name: NFD_NAME_PATH
+          value: /etc/ndn-config/ROUTER_NAME
         - name: NDN_SCRIPT_NAME
           value: use_rename_city_to_kanji.ndn
         - name: NDN_SCRIPT_SOURCE
@@ -165,6 +169,8 @@ spec:
         env:
         - name: NFD_CONFIG_PATH
           value: /etc/ndn-config/ADDRESS
+        - name: NFD_NAME_PATH
+          value: /etc/ndn-config/ROUTER_NAME
         - name: NDN_SCRIPT_NAME
           value: use_rename_to_kanji.ndn
         - name: NDN_SCRIPT_SOURCE
@@ -225,6 +231,8 @@ spec:
         env:
         - name: NFD_CONFIG_PATH
           value: /etc/ndn-config/ADDRESS
+        - name: NFD_NAME_PATH
+          value: /etc/ndn-config/ROUTER_NAME
         - name: NDN_SCRIPT_NAME
           value: use_sqrt_numpy.ndn
         - name: NDN_SCRIPT_SOURCE
@@ -285,6 +293,8 @@ spec:
         env:
         - name: NFD_CONFIG_PATH
           value: /etc/ndn-config/ADDRESS
+        - name: NFD_NAME_PATH
+          value: /etc/ndn-config/ROUTER_NAME
         - name: NDN_SCRIPT_NAME
           value: use_ten_x.ndn
         - name: NDN_SCRIPT_SOURCE
