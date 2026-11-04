@@ -1,5 +1,10 @@
 #!/bin/sh
 set -eu
+
+# /root/.ndn is backed by the NLSR state PVC. Do not use the read-only
+# /config ConfigMap mount as HOME for ndnsec or NLSR.
+export HOME=/root
+
 case "$POD_NAME" in
   ndn-router-0) peer=ndn-router-1; peer_service=nfd-peer-1 ;;
   ndn-router-1) peer=ndn-router-0; peer_service=nfd-peer-0 ;;

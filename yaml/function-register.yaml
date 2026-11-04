@@ -2,7 +2,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: function-register-average-3-f0ef687a85c9
+  name: function-register-capital-japan-34dd215d72d5
   namespace: ndn
   annotations:
     argocd.argoproj.io/sync-wave: '1'
@@ -15,6 +15,13 @@ spec:
         app: function-register
     spec:
       restartPolicy: Never
+      topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: ScheduleAnyway
+        labelSelector:
+          matchLabels:
+            app: function-register
       initContainers:
       - name: nfd-address
         image: ghcr.io/nakazato-lab/ndn-dhcp/ndn-dhcp-client:latest
@@ -38,16 +45,21 @@ spec:
         env:
         - name: NFD_CONFIG_PATH
           value: /etc/ndn-config/ADDRESS
+        - name: NFD_NAME_PATH
+          value: /etc/ndn-config/ROUTER_NAME
         - name: FUNCTION_NAME
-          value: average-3
+          value: /capital/japan
+        - name: FUNCTION_RUNTIME
+          value: python
         - name: FUNCTION_CODE
           value: |
-            let avg = (arg0 + arg1 + arg2) / 3
-            return avg
+            print("Tokyo")
+        - name: FUNCTION_REQUIREMENTS
+          value: '[]'
         - name: FUNCTION_PREFERENCE_CPU
-          value: low
+          value: medium
         - name: FUNCTION_PREFERENCE_MEMORY
-          value: high
+          value: medium
         - name: FUNCTION_PREFERENCE_BANDWIDTH
           value: medium
         - name: MANAGER_REGISTER_NAME
@@ -63,13 +75,820 @@ spec:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: function-register-average-074aab6fa5d9
+  name: function-register-rename-city-to-kanji-1be5deef3678
   namespace: ndn
   annotations:
     argocd.argoproj.io/sync-wave: '1'
 spec:
   backoffLimit: 2
   activeDeadlineSeconds: 180
+  template:
+    metadata:
+      labels:
+        app: function-register
+    spec:
+      restartPolicy: Never
+      topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: ScheduleAnyway
+        labelSelector:
+          matchLabels:
+            app: function-register
+      initContainers:
+      - name: nfd-address
+        image: ghcr.io/nakazato-lab/ndn-dhcp/ndn-dhcp-client:latest
+        imagePullPolicy: Always
+        env:
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        volumeMounts:
+        - name: nfd-endpoint
+          mountPath: /etc/ndn-config
+      containers:
+      - name: registerer
+        image: ghcr.io/nakazato-lab/function-utils/ndn-function-registerer:latest
+        imagePullPolicy: Always
+        command:
+        - python
+        - -u
+        - /app/register.py
+        env:
+        - name: NFD_CONFIG_PATH
+          value: /etc/ndn-config/ADDRESS
+        - name: NFD_NAME_PATH
+          value: /etc/ndn-config/ROUTER_NAME
+        - name: FUNCTION_NAME
+          value: rename_city_to_kanji
+        - name: FUNCTION_RUNTIME
+          value: python
+        - name: FUNCTION_CODE
+          value: |
+            import sys
+
+            CITY_TO_KANJI = {
+                "Tokyo": "東京",
+                "Sapporo": "札幌",
+                "Sendai": "仙台",
+                "Yokohama": "横浜",
+                "Nagoya": "名古屋",
+                "Kyoto": "京都",
+                "Osaka": "大阪",
+                "Kobe": "神戸",
+                "Hiroshima": "広島",
+                "Fukuoka": "福岡",
+                "Naha": "那覇",
+                "Tokyo": "東京",
+                "Sapporo": "札幌",
+                "Sendai": "仙台",
+                "Yokohama": "横浜",
+                "Nagoya": "名古屋",
+                "Kyoto": "京都",
+                "Osaka": "大阪",
+                "Kobe": "神戸",
+                "Hiroshima": "広島",
+                "Fukuoka": "福岡",
+                "Naha": "那覇",
+                "Tokyo": "東京",
+                "Sapporo": "札幌",
+                "Sendai": "仙台",
+                "Yokohama": "横浜",
+                "Nagoya": "名古屋",
+                "Kyoto": "京都",
+                "Osaka": "大阪",
+                "Kobe": "神戸",
+                "Hiroshima": "広島",
+                "Fukuoka": "福岡",
+                "Naha": "那覇",
+                "Tokyo": "東京",
+                "Sapporo": "札幌",
+                "Sendai": "仙台",
+                "Yokohama": "横浜",
+                "Nagoya": "名古屋",
+                "Kyoto": "京都",
+                "Osaka": "大阪",
+                "Kobe": "神戸",
+                "Hiroshima": "広島",
+                "Fukuoka": "福岡",
+                "Naha": "那覇",
+                "Tokyo": "東京",
+                "Sapporo": "札幌",
+                "Sendai": "仙台",
+                "Yokohama": "横浜",
+                "Nagoya": "名古屋",
+                "Kyoto": "京都",
+                "Osaka": "大阪",
+                "Kobe": "神戸",
+                "Hiroshima": "広島",
+                "Fukuoka": "福岡",
+                "Naha": "那覇",
+                "Tokyo": "東京",
+                "Sapporo": "札幌",
+                "Sendai": "仙台",
+                "Yokohama": "横浜",
+                "Nagoya": "名古屋",
+                "Kyoto": "京都",
+                "Osaka": "大阪",
+                "Kobe": "神戸",
+                "Hiroshima": "広島",
+                "Fukuoka": "福岡",
+                "Naha": "那覇",
+                "Tokyo": "東京",
+                "Sapporo": "札幌",
+                "Sendai": "仙台",
+                "Yokohama": "横浜",
+                "Nagoya": "名古屋",
+                "Kyoto": "京都",
+                "Osaka": "大阪",
+                "Kobe": "神戸",
+                "Hiroshima": "広島",
+                "Fukuoka": "福岡",
+                "Naha": "那覇",
+                "Tokyo": "東京",
+                "Sapporo": "札幌",
+                "Sendai": "仙台",
+                "Yokohama": "横浜",
+                "Nagoya": "名古屋",
+                "Kyoto": "京都",
+                "Osaka": "大阪",
+                "Kobe": "神戸",
+                "Hiroshima": "広島",
+                "Fukuoka": "福岡",
+                "Naha": "那覇",
+                "Tokyo": "東京",
+                "Sapporo": "札幌",
+                "Sendai": "仙台",
+                "Yokohama": "横浜",
+                "Nagoya": "名古屋",
+                "Kyoto": "京都",
+                "Osaka": "大阪",
+                "Kobe": "神戸",
+                "Hiroshima": "広島",
+                "Fukuoka": "福岡",
+                "Naha": "那覇",
+                "Tokyo": "東京",
+                "Sapporo": "札幌",
+                "Sendai": "仙台",
+                "Yokohama": "横浜",
+                "Nagoya": "名古屋",
+                "Kyoto": "京都",
+                "Osaka": "大阪",
+                "Kobe": "神戸",
+                "Hiroshima": "広島",
+                "Fukuoka": "福岡",
+                "Naha": "那覇",
+                "Tokyo": "東京",
+                "Sapporo": "札幌",
+                "Sendai": "仙台",
+                "Yokohama": "横浜",
+                "Nagoya": "名古屋",
+                "Kyoto": "京都",
+                "Osaka": "大阪",
+                "Kobe": "神戸",
+                "Hiroshima": "広島",
+                "Fukuoka": "福岡",
+                "Naha": "那覇",
+                "Tokyo": "東京",
+                "Sapporo": "札幌",
+                "Sendai": "仙台",
+                "Yokohama": "横浜",
+                "Nagoya": "名古屋",
+                "Kyoto": "京都",
+                "Osaka": "大阪",
+                "Kobe": "神戸",
+                "Hiroshima": "広島",
+                "Fukuoka": "福岡",
+                "Naha": "那覇",
+                "Tokyo": "東京",
+                "Sapporo": "札幌",
+                "Sendai": "仙台",
+                "Yokohama": "横浜",
+                "Nagoya": "名古屋",
+                "Kyoto": "京都",
+                "Osaka": "大阪",
+                "Kobe": "神戸",
+                "Hiroshima": "広島",
+                "Fukuoka": "福岡",
+                "Naha": "那覇",
+                "Tokyo": "東京",
+                "Sapporo": "札幌",
+                "Sendai": "仙台",
+                "Yokohama": "横浜",
+                "Nagoya": "名古屋",
+                "Kyoto": "京都",
+                "Osaka": "大阪",
+                "Kobe": "神戸",
+                "Hiroshima": "広島",
+                "Fukuoka": "福岡",
+                "Naha": "那覇",
+                "Tokyo": "東京",
+                "Sapporo": "札幌",
+                "Sendai": "仙台",
+                "Yokohama": "横浜",
+                "Nagoya": "名古屋",
+                "Kyoto": "京都",
+                "Osaka": "大阪",
+                "Kobe": "神戸",
+                "Hiroshima": "広島",
+                "Fukuoka": "福岡",
+                "Naha": "那覇",
+                "Tokyo": "東京",
+                "Sapporo": "札幌",
+                "Sendai": "仙台",
+                "Yokohama": "横浜",
+                "Nagoya": "名古屋",
+                "Kyoto": "京都",
+                "Osaka": "大阪",
+                "Kobe": "神戸",
+                "Hiroshima": "広島",
+                "Fukuoka": "福岡",
+                "Naha": "那覇",
+                "Tokyo": "東京",
+                "Sapporo": "札幌",
+                "Sendai": "仙台",
+                "Yokohama": "横浜",
+                "Nagoya": "名古屋",
+                "Kyoto": "京都",
+                "Osaka": "大阪",
+                "Kobe": "神戸",
+                "Hiroshima": "広島",
+                "Fukuoka": "福岡",
+                "Naha": "那覇",
+                "Tokyo": "東京",
+                "Sapporo": "札幌",
+                "Sendai": "仙台",
+                "Yokohama": "横浜",
+                "Nagoya": "名古屋",
+                "Kyoto": "京都",
+                "Osaka": "大阪",
+                "Kobe": "神戸",
+                "Hiroshima": "広島",
+                "Fukuoka": "福岡",
+                "Naha": "那覇",
+                "Tokyo": "東京",
+                "Sapporo": "札幌",
+                "Sendai": "仙台",
+                "Yokohama": "横浜",
+                "Nagoya": "名古屋",
+                "Kyoto": "京都",
+                "Osaka": "大阪",
+                "Kobe": "神戸",
+                "Hiroshima": "広島",
+                "Fukuoka": "福岡",
+                "Naha": "那覇",
+                "Tokyo": "東京",
+                "Sapporo": "札幌",
+                "Sendai": "仙台",
+                "Yokohama": "横浜",
+                "Nagoya": "名古屋",
+                "Kyoto": "京都",
+                "Osaka": "大阪",
+                "Kobe": "神戸",
+                "Hiroshima": "広島",
+                "Fukuoka": "福岡",
+                "Naha": "那覇",
+                "Tokyo": "東京",
+                "Sapporo": "札幌",
+                "Sendai": "仙台",
+                "Yokohama": "横浜",
+                "Nagoya": "名古屋",
+                "Kyoto": "京都",
+                "Osaka": "大阪",
+                "Kobe": "神戸",
+                "Hiroshima": "広島",
+                "Fukuoka": "福岡",
+                "Naha": "那覇",
+                "Tokyo": "東京",
+                "Sapporo": "札幌",
+                "Sendai": "仙台",
+                "Yokohama": "横浜",
+                "Nagoya": "名古屋",
+                "Kyoto": "京都",
+                "Osaka": "大阪",
+                "Kobe": "神戸",
+                "Hiroshima": "広島",
+                "Fukuoka": "福岡",
+                "Naha": "那覇",
+                "Tokyo": "東京",
+                "Sapporo": "札幌",
+                "Sendai": "仙台",
+                "Yokohama": "横浜",
+                "Nagoya": "名古屋",
+                "Kyoto": "京都",
+                "Osaka": "大阪",
+                "Kobe": "神戸",
+                "Hiroshima": "広島",
+                "Fukuoka": "福岡",
+                "Naha": "那覇",
+                "Tokyo": "東京",
+                "Sapporo": "札幌",
+                "Sendai": "仙台",
+                "Yokohama": "横浜",
+                "Nagoya": "名古屋",
+                "Kyoto": "京都",
+                "Osaka": "大阪",
+                "Kobe": "神戸",
+                "Hiroshima": "広島",
+                "Fukuoka": "福岡",
+                "Naha": "那覇",
+                "Tokyo": "東京",
+                "Sapporo": "札幌",
+                "Sendai": "仙台",
+                "Yokohama": "横浜",
+                "Nagoya": "名古屋",
+                "Kyoto": "京都",
+                "Osaka": "大阪",
+                "Kobe": "神戸",
+                "Hiroshima": "広島",
+                "Fukuoka": "福岡",
+                "Naha": "那覇",
+                "Tokyo": "東京",
+                "Sapporo": "札幌",
+                "Sendai": "仙台",
+                "Yokohama": "横浜",
+                "Nagoya": "名古屋",
+                "Kyoto": "京都",
+                "Osaka": "大阪",
+                "Kobe": "神戸",
+                "Hiroshima": "広島",
+                "Fukuoka": "福岡",
+                "Naha": "那覇",
+                "Tokyo": "東京",
+                "Sapporo": "札幌",
+                "Sendai": "仙台",
+                "Yokohama": "横浜",
+                "Nagoya": "名古屋",
+                "Kyoto": "京都",
+                "Osaka": "大阪",
+                "Kobe": "神戸",
+                "Hiroshima": "広島",
+                "Fukuoka": "福岡",
+                "Naha": "那覇",
+                "Tokyo": "東京",
+                "Sapporo": "札幌",
+                "Sendai": "仙台",
+                "Yokohama": "横浜",
+                "Nagoya": "名古屋",
+                "Kyoto": "京都",
+                "Osaka": "大阪",
+                "Kobe": "神戸",
+                "Hiroshima": "広島",
+                "Fukuoka": "福岡",
+                "Naha": "那覇",
+                "Tokyo": "東京",
+                "Sapporo": "札幌",
+                "Sendai": "仙台",
+                "Yokohama": "横浜",
+                "Nagoya": "名古屋",
+                "Kyoto": "京都",
+                "Osaka": "大阪",
+                "Kobe": "神戸",
+                "Hiroshima": "広島",
+                "Fukuoka": "福岡",
+                "Naha": "那覇",
+                "Tokyo": "東京",
+                "Sapporo": "札幌",
+                "Sendai": "仙台",
+                "Yokohama": "横浜",
+                "Nagoya": "名古屋",
+                "Kyoto": "京都",
+                "Osaka": "大阪",
+                "Kobe": "神戸",
+                "Hiroshima": "広島",
+                "Fukuoka": "福岡",
+                "Naha": "那覇",
+                "Tokyo": "東京",
+                "Sapporo": "札幌",
+                "Sendai": "仙台",
+                "Yokohama": "横浜",
+                "Nagoya": "名古屋",
+                "Kyoto": "京都",
+                "Osaka": "大阪",
+                "Kobe": "神戸",
+                "Hiroshima": "広島",
+                "Fukuoka": "福岡",
+                "Naha": "那覇",
+                "Tokyo": "東京",
+                "Sapporo": "札幌",
+                "Sendai": "仙台",
+                "Yokohama": "横浜",
+                "Nagoya": "名古屋",
+                "Kyoto": "京都",
+                "Osaka": "大阪",
+                "Kobe": "神戸",
+                "Hiroshima": "広島",
+                "Fukuoka": "福岡",
+                "Naha": "那覇",
+                "Tokyo": "東京",
+                "Sapporo": "札幌",
+                "Sendai": "仙台",
+                "Yokohama": "横浜",
+                "Nagoya": "名古屋",
+                "Kyoto": "京都",
+                "Osaka": "大阪",
+                "Kobe": "神戸",
+                "Hiroshima": "広島",
+                "Fukuoka": "福岡",
+                "Naha": "那覇",
+                "Tokyo": "東京",
+                "Sapporo": "札幌",
+                "Sendai": "仙台",
+                "Yokohama": "横浜",
+                "Nagoya": "名古屋",
+                "Kyoto": "京都",
+                "Osaka": "大阪",
+                "Kobe": "神戸",
+                "Hiroshima": "広島",
+                "Fukuoka": "福岡",
+                "Naha": "那覇",
+                "Tokyo": "東京",
+                "Sapporo": "札幌",
+                "Sendai": "仙台",
+                "Yokohama": "横浜",
+                "Nagoya": "名古屋",
+                "Kyoto": "京都",
+                "Osaka": "大阪",
+                "Kobe": "神戸",
+                "Hiroshima": "広島",
+                "Fukuoka": "福岡",
+                "Naha": "那覇",
+                "Tokyo": "東京",
+                "Sapporo": "札幌",
+                "Sendai": "仙台",
+                "Yokohama": "横浜",
+                "Nagoya": "名古屋",
+                "Kyoto": "京都",
+                "Osaka": "大阪",
+                "Kobe": "神戸",
+                "Hiroshima": "広島",
+                "Fukuoka": "福岡",
+                "Naha": "那覇",
+                "Tokyo": "東京",
+                "Sapporo": "札幌",
+                "Sendai": "仙台",
+                "Yokohama": "横浜",
+                "Nagoya": "名古屋",
+                "Kyoto": "京都",
+                "Osaka": "大阪",
+                "Kobe": "神戸",
+                "Hiroshima": "広島",
+                "Fukuoka": "福岡",
+                "Naha": "那覇",
+                "Tokyo": "東京",
+                "Sapporo": "札幌",
+                "Sendai": "仙台",
+                "Yokohama": "横浜",
+                "Nagoya": "名古屋",
+                "Kyoto": "京都",
+                "Osaka": "大阪",
+                "Kobe": "神戸",
+                "Hiroshima": "広島",
+                "Fukuoka": "福岡",
+                "Naha": "那覇",
+                "Tokyo": "東京",
+                "Sapporo": "札幌",
+                "Sendai": "仙台",
+                "Yokohama": "横浜",
+                "Nagoya": "名古屋",
+                "Kyoto": "京都",
+                "Osaka": "大阪",
+                "Kobe": "神戸",
+                "Hiroshima": "広島",
+                "Fukuoka": "福岡",
+                "Naha": "那覇",
+                "Tokyo": "東京",
+                "Sapporo": "札幌",
+                "Sendai": "仙台",
+                "Yokohama": "横浜",
+                "Nagoya": "名古屋",
+                "Kyoto": "京都",
+                "Osaka": "大阪",
+                "Kobe": "神戸",
+                "Hiroshima": "広島",
+                "Fukuoka": "福岡",
+                "Naha": "那覇",
+                "Tokyo": "東京",
+                "Sapporo": "札幌",
+                "Sendai": "仙台",
+                "Yokohama": "横浜",
+                "Nagoya": "名古屋",
+                "Kyoto": "京都",
+                "Osaka": "大阪",
+                "Kobe": "神戸",
+                "Hiroshima": "広島",
+                "Fukuoka": "福岡",
+                "Naha": "那覇",
+                "Tokyo": "東京",
+                "Sapporo": "札幌",
+                "Sendai": "仙台",
+                "Yokohama": "横浜",
+                "Nagoya": "名古屋",
+                "Kyoto": "京都",
+                "Osaka": "大阪",
+                "Kobe": "神戸",
+                "Hiroshima": "広島",
+                "Fukuoka": "福岡",
+                "Naha": "那覇",
+                "Tokyo": "東京",
+                "Sapporo": "札幌",
+                "Sendai": "仙台",
+                "Yokohama": "横浜",
+                "Nagoya": "名古屋",
+                "Kyoto": "京都",
+                "Osaka": "大阪",
+                "Kobe": "神戸",
+                "Hiroshima": "広島",
+                "Fukuoka": "福岡",
+                "Naha": "那覇",
+                "Tokyo": "東京",
+                "Sapporo": "札幌",
+                "Sendai": "仙台",
+                "Yokohama": "横浜",
+                "Nagoya": "名古屋",
+                "Kyoto": "京都",
+                "Osaka": "大阪",
+                "Kobe": "神戸",
+                "Hiroshima": "広島",
+                "Fukuoka": "福岡",
+                "Naha": "那覇",
+                "Tokyo": "東京",
+                "Sapporo": "札幌",
+                "Sendai": "仙台",
+                "Yokohama": "横浜",
+                "Nagoya": "名古屋",
+                "Kyoto": "京都",
+                "Osaka": "大阪",
+                "Kobe": "神戸",
+                "Hiroshima": "広島",
+                "Fukuoka": "福岡",
+                "Naha": "那覇",
+            }
+
+            print(CITY_TO_KANJI.get(sys.argv[1], "不明"))
+        - name: FUNCTION_REQUIREMENTS
+          value: '[]'
+        - name: FUNCTION_PREFERENCE_CPU
+          value: medium
+        - name: FUNCTION_PREFERENCE_MEMORY
+          value: medium
+        - name: FUNCTION_PREFERENCE_BANDWIDTH
+          value: medium
+        - name: MANAGER_REGISTER_NAME
+          value: /Manager/register
+        volumeMounts:
+        - name: nfd-endpoint
+          mountPath: /etc/ndn-config
+          readOnly: true
+      volumes:
+      - name: nfd-endpoint
+        emptyDir: {}
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: function-register-rename-to-kanji-b1c95ec236b8
+  namespace: ndn
+  annotations:
+    argocd.argoproj.io/sync-wave: '1'
+spec:
+  backoffLimit: 2
+  activeDeadlineSeconds: 180
+  template:
+    metadata:
+      labels:
+        app: function-register
+    spec:
+      restartPolicy: Never
+      topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: ScheduleAnyway
+        labelSelector:
+          matchLabels:
+            app: function-register
+      initContainers:
+      - name: nfd-address
+        image: ghcr.io/nakazato-lab/ndn-dhcp/ndn-dhcp-client:latest
+        imagePullPolicy: Always
+        env:
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        volumeMounts:
+        - name: nfd-endpoint
+          mountPath: /etc/ndn-config
+      containers:
+      - name: registerer
+        image: ghcr.io/nakazato-lab/function-utils/ndn-function-registerer:latest
+        imagePullPolicy: Always
+        command:
+        - python
+        - -u
+        - /app/register.py
+        env:
+        - name: NFD_CONFIG_PATH
+          value: /etc/ndn-config/ADDRESS
+        - name: NFD_NAME_PATH
+          value: /etc/ndn-config/ROUTER_NAME
+        - name: FUNCTION_NAME
+          value: rename_to_kanji
+        - name: FUNCTION_RUNTIME
+          value: python
+        - name: FUNCTION_CODE
+          value: |
+            import sys
+
+            arg0 = sys.argv[1]
+            if arg0 == "Tokyo":
+                print("東京")
+            else:
+                print("不明")
+        - name: FUNCTION_REQUIREMENTS
+          value: '[]'
+        - name: FUNCTION_PREFERENCE_CPU
+          value: medium
+        - name: FUNCTION_PREFERENCE_MEMORY
+          value: medium
+        - name: FUNCTION_PREFERENCE_BANDWIDTH
+          value: medium
+        - name: MANAGER_REGISTER_NAME
+          value: /Manager/register
+        volumeMounts:
+        - name: nfd-endpoint
+          mountPath: /etc/ndn-config
+          readOnly: true
+      volumes:
+      - name: nfd-endpoint
+        emptyDir: {}
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: function-register-sqrt-numpy-bcc93a80ca4d
+  namespace: ndn
+  annotations:
+    argocd.argoproj.io/sync-wave: '1'
+spec:
+  backoffLimit: 2
+  activeDeadlineSeconds: 180
+  template:
+    metadata:
+      labels:
+        app: function-register
+    spec:
+      restartPolicy: Never
+      topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: ScheduleAnyway
+        labelSelector:
+          matchLabels:
+            app: function-register
+      initContainers:
+      - name: nfd-address
+        image: ghcr.io/nakazato-lab/ndn-dhcp/ndn-dhcp-client:latest
+        imagePullPolicy: Always
+        env:
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        volumeMounts:
+        - name: nfd-endpoint
+          mountPath: /etc/ndn-config
+      containers:
+      - name: registerer
+        image: ghcr.io/nakazato-lab/function-utils/ndn-function-registerer:latest
+        imagePullPolicy: Always
+        command:
+        - python
+        - -u
+        - /app/register.py
+        env:
+        - name: NFD_CONFIG_PATH
+          value: /etc/ndn-config/ADDRESS
+        - name: NFD_NAME_PATH
+          value: /etc/ndn-config/ROUTER_NAME
+        - name: FUNCTION_NAME
+          value: sqrt_numpy
+        - name: FUNCTION_RUNTIME
+          value: python
+        - name: FUNCTION_CODE
+          value: |
+            import sys
+
+            import numpy as np
+
+
+            x = float(sys.argv[1])
+            print(np.sqrt(x))
+        - name: FUNCTION_REQUIREMENTS
+          value: '["numpy==2.1.0"]'
+        - name: FUNCTION_PREFERENCE_CPU
+          value: medium
+        - name: FUNCTION_PREFERENCE_MEMORY
+          value: medium
+        - name: FUNCTION_PREFERENCE_BANDWIDTH
+          value: medium
+        - name: MANAGER_REGISTER_NAME
+          value: /Manager/register
+        volumeMounts:
+        - name: nfd-endpoint
+          mountPath: /etc/ndn-config
+          readOnly: true
+      volumes:
+      - name: nfd-endpoint
+        emptyDir: {}
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: function-register-ten-x-5171774a31dd
+  namespace: ndn
+  annotations:
+    argocd.argoproj.io/sync-wave: '1'
+spec:
+  backoffLimit: 2
+  activeDeadlineSeconds: 180
+  template:
+    metadata:
+      labels:
+        app: function-register
+    spec:
+      restartPolicy: Never
+      topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: ScheduleAnyway
+        labelSelector:
+          matchLabels:
+            app: function-register
+      initContainers:
+      - name: nfd-address
+        image: ghcr.io/nakazato-lab/ndn-dhcp/ndn-dhcp-client:latest
+        imagePullPolicy: Always
+        env:
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        volumeMounts:
+        - name: nfd-endpoint
+          mountPath: /etc/ndn-config
+      containers:
+      - name: registerer
+        image: ghcr.io/nakazato-lab/function-utils/ndn-function-registerer:latest
+        imagePullPolicy: Always
+        command:
+        - python
+        - -u
+        - /app/register.py
+        env:
+        - name: NFD_CONFIG_PATH
+          value: /etc/ndn-config/ADDRESS
+        - name: NFD_NAME_PATH
+          value: /etc/ndn-config/ROUTER_NAME
+        - name: FUNCTION_NAME
+          value: ten_x
+        - name: FUNCTION_RUNTIME
+          value: python
+        - name: FUNCTION_CODE
+          value: |
+            import sys
+
+            arg0 = int(sys.argv[1])
+            print(arg0 * 10)
+        - name: FUNCTION_REQUIREMENTS
+          value: '[]'
+        - name: FUNCTION_PREFERENCE_CPU
+          value: medium
+        - name: FUNCTION_PREFERENCE_MEMORY
+          value: medium
+        - name: FUNCTION_PREFERENCE_BANDWIDTH
+          value: medium
+        - name: MANAGER_REGISTER_NAME
+          value: /Manager/register
+        volumeMounts:
+        - name: nfd-endpoint
+          mountPath: /etc/ndn-config
+          readOnly: true
+      volumes:
+      - name: nfd-endpoint
+        emptyDir: {}
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: function-delete-capital-japan-e66e50c3a6a4
+  namespace: ndn
+  annotations:
+    argocd.argoproj.io/sync-wave: '1'
+spec:
+  backoffLimit: 2
+  activeDeadlineSeconds: 300
   template:
     metadata:
       labels:
@@ -99,20 +918,187 @@ spec:
         env:
         - name: NFD_CONFIG_PATH
           value: /etc/ndn-config/ADDRESS
+        - name: NFD_NAME_PATH
+          value: /etc/ndn-config/ROUTER_NAME
         - name: FUNCTION_NAME
-          value: average
-        - name: FUNCTION_CODE
-          value: |
-            let avg = (arg0 + arg1) / 2
-            return avg
-        - name: FUNCTION_PREFERENCE_CPU
-          value: high
-        - name: FUNCTION_PREFERENCE_MEMORY
-          value: medium
-        - name: FUNCTION_PREFERENCE_BANDWIDTH
-          value: medium
+          value: capital_japan
+        - name: FUNCTION_RUNTIME
+          value: python
         - name: MANAGER_REGISTER_NAME
           value: /Manager/register
+        - name: FUNCTION_OPERATION
+          value: DELETE
+        volumeMounts:
+        - name: nfd-endpoint
+          mountPath: /etc/ndn-config
+          readOnly: true
+      volumes:
+      - name: nfd-endpoint
+        emptyDir: {}
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: function-delete-10x-711cf1c13cce
+  namespace: ndn
+  annotations:
+    argocd.argoproj.io/sync-wave: '1'
+spec:
+  backoffLimit: 2
+  activeDeadlineSeconds: 300
+  template:
+    metadata:
+      labels:
+        app: function-register
+    spec:
+      restartPolicy: Never
+      initContainers:
+      - name: nfd-address
+        image: ghcr.io/nakazato-lab/ndn-dhcp/ndn-dhcp-client:latest
+        imagePullPolicy: Always
+        env:
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        volumeMounts:
+        - name: nfd-endpoint
+          mountPath: /etc/ndn-config
+      containers:
+      - name: registerer
+        image: ghcr.io/nakazato-lab/function-utils/ndn-function-registerer:latest
+        imagePullPolicy: Always
+        command:
+        - python
+        - -u
+        - /app/register.py
+        env:
+        - name: NFD_CONFIG_PATH
+          value: /etc/ndn-config/ADDRESS
+        - name: NFD_NAME_PATH
+          value: /etc/ndn-config/ROUTER_NAME
+        - name: FUNCTION_NAME
+          value: 10x
+        - name: FUNCTION_RUNTIME
+          value: python
+        - name: MANAGER_REGISTER_NAME
+          value: /Manager/register
+        - name: FUNCTION_OPERATION
+          value: DELETE
+        volumeMounts:
+        - name: nfd-endpoint
+          mountPath: /etc/ndn-config
+          readOnly: true
+      volumes:
+      - name: nfd-endpoint
+        emptyDir: {}
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: function-delete-average-3-374ef7f85f6e
+  namespace: ndn
+  annotations:
+    argocd.argoproj.io/sync-wave: '1'
+spec:
+  backoffLimit: 2
+  activeDeadlineSeconds: 300
+  template:
+    metadata:
+      labels:
+        app: function-register
+    spec:
+      restartPolicy: Never
+      initContainers:
+      - name: nfd-address
+        image: ghcr.io/nakazato-lab/ndn-dhcp/ndn-dhcp-client:latest
+        imagePullPolicy: Always
+        env:
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        volumeMounts:
+        - name: nfd-endpoint
+          mountPath: /etc/ndn-config
+      containers:
+      - name: registerer
+        image: ghcr.io/nakazato-lab/function-utils/ndn-function-registerer:latest
+        imagePullPolicy: Always
+        command:
+        - python
+        - -u
+        - /app/register.py
+        env:
+        - name: NFD_CONFIG_PATH
+          value: /etc/ndn-config/ADDRESS
+        - name: NFD_NAME_PATH
+          value: /etc/ndn-config/ROUTER_NAME
+        - name: FUNCTION_NAME
+          value: average-3
+        - name: FUNCTION_RUNTIME
+          value: ndn
+        - name: MANAGER_REGISTER_NAME
+          value: /Manager/register
+        - name: FUNCTION_OPERATION
+          value: DELETE
+        volumeMounts:
+        - name: nfd-endpoint
+          mountPath: /etc/ndn-config
+          readOnly: true
+      volumes:
+      - name: nfd-endpoint
+        emptyDir: {}
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: function-delete-average-9ad64126373f
+  namespace: ndn
+  annotations:
+    argocd.argoproj.io/sync-wave: '1'
+spec:
+  backoffLimit: 2
+  activeDeadlineSeconds: 300
+  template:
+    metadata:
+      labels:
+        app: function-register
+    spec:
+      restartPolicy: Never
+      initContainers:
+      - name: nfd-address
+        image: ghcr.io/nakazato-lab/ndn-dhcp/ndn-dhcp-client:latest
+        imagePullPolicy: Always
+        env:
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        volumeMounts:
+        - name: nfd-endpoint
+          mountPath: /etc/ndn-config
+      containers:
+      - name: registerer
+        image: ghcr.io/nakazato-lab/function-utils/ndn-function-registerer:latest
+        imagePullPolicy: Always
+        command:
+        - python
+        - -u
+        - /app/register.py
+        env:
+        - name: NFD_CONFIG_PATH
+          value: /etc/ndn-config/ADDRESS
+        - name: NFD_NAME_PATH
+          value: /etc/ndn-config/ROUTER_NAME
+        - name: FUNCTION_NAME
+          value: average
+        - name: FUNCTION_RUNTIME
+          value: ndn
+        - name: MANAGER_REGISTER_NAME
+          value: /Manager/register
+        - name: FUNCTION_OPERATION
+          value: DELETE
         volumeMounts:
         - name: nfd-endpoint
           mountPath: /etc/ndn-config
