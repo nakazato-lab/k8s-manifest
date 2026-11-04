@@ -22,6 +22,11 @@ Verified on Windows 11, Docker Desktop with the WSL2 backend, Minikube v1.39.0,
 Kubernetes v1.37.0, the Docker driver and containerd, with two nodes named
 `minikube` and `minikube-m02`. Other developers' machines have not been tested.
 
+The initial end-to-end smoke test registered `average` and `average-3`, then
+ran `use_average.ndn` with outputs `15` and `35`. Generated functions can change
+on main; that result does not establish execution success for every later
+generated function.
+
 `eth0` is the interface observed in this tested setup, not a guarantee for every
 Minikube driver or host. Check the node-exporter's `node_network_*` device
 labels and adjust `NETWORK_INTERFACE` in `spy-network-metrics-patch.yaml` if
@@ -33,11 +38,11 @@ receive and transmit byte counters.
 - `nfd-storage-patch.yaml` selects the local `standard` StorageClass.
 - `image-pull-policy-patch.yaml` reuses cached router and Seed images with
   `IfNotPresent`, so a temporary GHCR/DNS failure does not prevent a restart.
-- `function-register-patch.yaml` supplies `FUNCTION_RUNTIME=ndn` for both
-  registration Jobs, matching the `.ndn` source in the base manifests.
-  This is required by the registerer image used in this verification regardless
-  of the Kubernetes environment; it is not inherently a Minikube setting.
-  It is currently kept here to preserve the original lab manifests.
+- `function-register-patch.yaml` and `function-invoke-patch.yaml` only adjust
+  image pull policies for the generated registration and invocation Jobs.
+  `FUNCTION_RUNTIME`, function source, requirements and invocation arguments
+  remain as specified in the base manifests. Python functions keep `python`;
+  NDN functions keep `ndn`.
 - The Function Job patches also use `IfNotPresent`. A node still needs registry
   access the first time it uses an image that is not cached there. Cached
   `latest` images do not update automatically under this policy.

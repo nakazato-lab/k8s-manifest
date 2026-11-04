@@ -11,7 +11,3 @@ spec:
       containers:
         - name: registerer
           imagePullPolicy: IfNotPresent
-          env:
-            # The base manifests contain .ndn source, not Python source.
-            - name: FUNCTION_RUNTIME
-              value: ndn
