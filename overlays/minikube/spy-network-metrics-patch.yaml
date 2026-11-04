@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: spy-daemonset
+spec:
+  template:
+    spec:
+      containers:
+        - name: spy
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: NETWORK_INTERFACE
+              value: eth0
+          volumeMounts:
+            - name: minikube-spy-network-metrics
+              mountPath: /app/network_metrics.py
+              subPath: network_metrics.py
+              readOnly: true
+      volumes:
+        - name: minikube-spy-network-metrics
+          configMap:
+            name: minikube-spy-network-metrics
