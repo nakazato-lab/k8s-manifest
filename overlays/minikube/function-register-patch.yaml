@@ -1,0 +1,17 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: function-register
+spec:
+  template:
+    spec:
+      initContainers:
+        - name: nfd-address
+          imagePullPolicy: IfNotPresent
+      containers:
+        - name: registerer
+          imagePullPolicy: IfNotPresent
+          env:
+            # The base manifests contain .ndn source, not Python source.
+            - name: FUNCTION_RUNTIME
+              value: ndn
