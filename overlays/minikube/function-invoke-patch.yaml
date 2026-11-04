@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: function-invoke-use-average-872195af89b7
+  name: function-invoke
   namespace: ndn
 spec:
   template:

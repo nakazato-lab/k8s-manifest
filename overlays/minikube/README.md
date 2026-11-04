@@ -58,15 +58,40 @@ The base configuration content is unchanged apart from line endings.
 
 Job Pod templates are immutable and an exhausted Job does not restart when
 applied again. Preserve logs before deleting a failed Job, then recreate only
-that Job after NFD, NLSR, Seed and Manager are ready. For the current manifests:
+that Job after NFD, NLSR, Seed and Manager are ready. Generated Job names contain
+hashes that can change when the source changes. Select failed Jobs by their
+registration/invocation prefixes, and wait for registrations before retrying
+invocations:
 
 ```powershell
-kubectl --context=minikube -n ndn delete job function-register-average-074aab6fa5d9 function-register-average-3-f0ef687a85c9
+function Remove-FailedFunctionJobs([string]$prefix) {
+    $jobs = kubectl --context=minikube -n ndn get jobs -o json | ConvertFrom-Json
+    foreach ($job in $jobs.items) {
+        $failed = @($job.status.conditions | Where-Object {
+            $_.type -eq 'Failed' -and $_.status -eq 'True'
+        })
+        if ($job.metadata.name.StartsWith($prefix) -and $failed.Count -gt 0) {
+            kubectl --context=minikube -n ndn delete job $job.metadata.name
+        }
+    }
+}
+
+Remove-FailedFunctionJobs 'function-register-'
 kubectl --context=minikube apply -k overlays/minikube/
-kubectl --context=minikube -n ndn wait --for=condition=complete job/function-register-average-074aab6fa5d9 job/function-register-average-3-f0ef687a85c9 --timeout=180s
-kubectl --context=minikube -n ndn delete job function-invoke-use-average-872195af89b7
+$registrationJobs = @(kubectl --context=minikube -n ndn get jobs -o name |
+    Where-Object { $_ -like 'job.batch/function-register-*' })
+if ($registrationJobs.Count -gt 0) {
+    kubectl --context=minikube -n ndn wait --for=condition=complete @registrationJobs --timeout=180s
+}
+
+Remove-FailedFunctionJobs 'function-invoke-'
 kubectl --context=minikube apply -k overlays/minikube/
-kubectl --context=minikube -n ndn logs job/function-invoke-use-average-872195af89b7
+$invocationJobs = @(kubectl --context=minikube -n ndn get jobs -o name |
+    Where-Object { $_ -like 'job.batch/function-invoke-*' })
+if ($invocationJobs.Count -gt 0) {
+    kubectl --context=minikube -n ndn wait --for=condition=complete @invocationJobs --timeout=300s
+}
+kubectl --context=minikube -n ndn logs -l app=function-invoke -c invoker --prefix
 ```
 
 Before the first apply of a changed Job template, remove the affected failed

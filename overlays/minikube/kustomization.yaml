@@ -20,4 +20,9 @@ patches:
       kind: Job
       name: function-register-.*
   - path: function-invoke-patch.yaml
+    target:
+      group: batch
+      version: v1
+      kind: Job
+      name: function-invoke-.*
   - path: spy-network-metrics-patch.yaml
