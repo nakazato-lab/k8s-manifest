@@ -5,11 +5,6 @@ namespace: ndn
 resources:
   - ../../yaml
 
-configMapGenerator:
-  - name: minikube-spy-network-metrics
-    files:
-      - network_metrics.py
-
 patches:
   - path: nfd-storage-patch.yaml
   - path: image-pull-policy-patch.yaml

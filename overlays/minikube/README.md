@@ -46,13 +46,10 @@ receive and transmit byte counters.
 - The Function Job patches also use `IfNotPresent`. A node still needs registry
   access the first time it uses an image that is not cached there. Cached
   `latest` images do not update automatically under this policy.
-- `spy-network-metrics-patch.yaml` mounts the local `network_metrics.py` and
-  selects `NETWORK_INTERFACE=eth0`. The image hard-codes the lab NIC `ens18`,
-  which has no matching metrics on Minikube and makes resource replies fail.
+- `spy-network-metrics-patch.yaml` selects `NETWORK_INTERFACE=eth0`.
+  Use an updated Spy image that supports this environment variable.
   Only the NIC selection is adapted; sampling and the lab's assumed 1Gbps
   capacity remain unchanged. That capacity is not a measured virtual NIC speed.
-  The mounted module is adapted from the tested Spy image. Review compatibility
-  when updating that image; this does not change the upstream image itself.
 
 `conf/*.sh` and `conf/*.conf` must use LF line endings. The repository's
 `.gitattributes` preserves LF on Windows. Kustomize copies these file bytes into
