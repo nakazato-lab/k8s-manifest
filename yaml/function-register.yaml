@@ -2,7 +2,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: function-register-capital-japan-47c224af282d
+  name: function-register-capital-japan-34dd215d72d5
   namespace: ndn
   annotations:
     argocd.argoproj.io/sync-wave: '1'
@@ -75,7 +75,7 @@ spec:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: function-register-print-image-47c224af282d
+  name: function-register-print-image-1adf0ed04f27
   namespace: ndn
   annotations:
     argocd.argoproj.io/sync-wave: '1'
@@ -116,7 +116,9 @@ spec:
         - |
           import subprocess, zipfile
           from pathlib import Path
-          subprocess.run(['git', 'clone', '--depth', '1', '--branch', 'main', 'https://github.com/nakazato-lab/function-utils.git', '/app/package/repository'], check=True)
+          subprocess.run(['git', 'init', '/app/package/repository'], check=True)
+          subprocess.run(['git', '-C', '/app/package/repository', 'fetch', '--depth', '1', 'https://github.com/nakazato-lab/function-utils.git', '01e88f1bc984d9f37c6af7f6301c4c0081c22bbd'], check=True)
+          subprocess.run(['git', '-C', '/app/package/repository', 'checkout', '--detach', 'FETCH_HEAD'], check=True)
           root = Path('/app/package/repository/ndn-scripts/func')
           with zipfile.ZipFile('/app/package/function.zip', 'w', compression=zipfile.ZIP_DEFLATED) as archive:
               for filename in ['print_image.ndn', 'sample.png']:
@@ -177,7 +179,7 @@ spec:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: function-register-rename-city-to-kanji-47c224af282d
+  name: function-register-rename-city-to-kanji-1be5deef3678
   namespace: ndn
   annotations:
     argocd.argoproj.io/sync-wave: '1'
@@ -750,7 +752,7 @@ spec:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: function-register-rename-to-kanji-47c224af282d
+  name: function-register-rename-to-kanji-b1c95ec236b8
   namespace: ndn
   annotations:
     argocd.argoproj.io/sync-wave: '1'
@@ -829,7 +831,7 @@ spec:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: function-register-sqrt-numpy-47c224af282d
+  name: function-register-sqrt-numpy-bcc93a80ca4d
   namespace: ndn
   annotations:
     argocd.argoproj.io/sync-wave: '1'
@@ -908,7 +910,7 @@ spec:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: function-register-ten-x-47c224af282d
+  name: function-register-ten-x-5171774a31dd
   namespace: ndn
   annotations:
     argocd.argoproj.io/sync-wave: '1'
