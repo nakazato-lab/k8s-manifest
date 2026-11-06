@@ -2,7 +2,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: function-register-capital-japan-34dd215d72d5
+  name: function-register-capital-japan-47c224af282d
   namespace: ndn
   annotations:
     argocd.argoproj.io/sync-wave: '1'
@@ -75,7 +75,109 @@ spec:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: function-register-rename-city-to-kanji-1be5deef3678
+  name: function-register-print-image-47c224af282d
+  namespace: ndn
+  annotations:
+    argocd.argoproj.io/sync-wave: '1'
+spec:
+  backoffLimit: 2
+  activeDeadlineSeconds: 180
+  template:
+    metadata:
+      labels:
+        app: function-register
+    spec:
+      restartPolicy: Never
+      topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: ScheduleAnyway
+        labelSelector:
+          matchLabels:
+            app: function-register
+      initContainers:
+      - name: nfd-address
+        image: ghcr.io/nakazato-lab/ndn-dhcp/ndn-dhcp-client:latest
+        imagePullPolicy: Always
+        env:
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        volumeMounts:
+        - name: nfd-endpoint
+          mountPath: /etc/ndn-config
+      - name: fetch-function-files
+        image: ghcr.io/nakazato-lab/function-utils/ndn-function-registerer:latest
+        imagePullPolicy: Always
+        command:
+        - python
+        - -c
+        - |
+          import subprocess, zipfile
+          from pathlib import Path
+          subprocess.run(['git', 'clone', '--depth', '1', '--branch', 'main', 'https://github.com/nakazato-lab/function-utils.git', '/app/package/repository'], check=True)
+          root = Path('/app/package/repository/ndn-scripts/func')
+          with zipfile.ZipFile('/app/package/function.zip', 'w', compression=zipfile.ZIP_DEFLATED) as archive:
+              for filename in ['print_image.ndn', 'sample.png']:
+                  file_path = root / filename
+                  if not file_path.resolve().is_relative_to(root):
+                      raise ValueError('Function files must stay within ndn-scripts/func')
+                  archive.write(file_path, arcname=filename)
+        volumeMounts:
+        - name: script
+          mountPath: /app/package
+      containers:
+      - name: registerer
+        image: ghcr.io/nakazato-lab/function-utils/ndn-function-registerer:latest
+        imagePullPolicy: Always
+        command:
+        - python
+        - -u
+        - /app/register.py
+        env:
+        - name: NFD_CONFIG_PATH
+          value: /etc/ndn-config/ADDRESS
+        - name: NFD_NAME_PATH
+          value: /etc/ndn-config/ROUTER_NAME
+        - name: FUNCTION_NAME
+          value: print_image
+        - name: FUNCTION_RUNTIME
+          value: ndn
+        - name: FUNCTION_CODE
+          value: |
+            put_image("sample.png")
+        - name: FUNCTION_PACKAGE_PATH
+          value: /app/package/function.zip
+        - name: FUNCTION_SOURCE
+          value: print_image.ndn
+        - name: FUNCTION_REQUIREMENTS
+          value: '[]'
+        - name: FUNCTION_PREFERENCE_CPU
+          value: medium
+        - name: FUNCTION_PREFERENCE_MEMORY
+          value: medium
+        - name: FUNCTION_PREFERENCE_BANDWIDTH
+          value: medium
+        - name: MANAGER_REGISTER_NAME
+          value: /Manager/register
+        volumeMounts:
+        - name: nfd-endpoint
+          mountPath: /etc/ndn-config
+          readOnly: true
+        - name: script
+          mountPath: /app/package
+          readOnly: true
+      volumes:
+      - name: nfd-endpoint
+        emptyDir: {}
+      - name: script
+        emptyDir: {}
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: function-register-rename-city-to-kanji-47c224af282d
   namespace: ndn
   annotations:
     argocd.argoproj.io/sync-wave: '1'
@@ -648,7 +750,7 @@ spec:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: function-register-rename-to-kanji-b1c95ec236b8
+  name: function-register-rename-to-kanji-47c224af282d
   namespace: ndn
   annotations:
     argocd.argoproj.io/sync-wave: '1'
@@ -727,7 +829,7 @@ spec:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: function-register-sqrt-numpy-bcc93a80ca4d
+  name: function-register-sqrt-numpy-47c224af282d
   namespace: ndn
   annotations:
     argocd.argoproj.io/sync-wave: '1'
@@ -806,7 +908,7 @@ spec:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: function-register-ten-x-5171774a31dd
+  name: function-register-ten-x-47c224af282d
   namespace: ndn
   annotations:
     argocd.argoproj.io/sync-wave: '1'
