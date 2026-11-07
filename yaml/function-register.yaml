@@ -75,6 +75,109 @@ spec:
 apiVersion: batch/v1
 kind: Job
 metadata:
+  name: function-register-compress-image-9269ad1b5f81
+  namespace: ndn
+  annotations:
+    argocd.argoproj.io/sync-wave: '1'
+spec:
+  backoffLimit: 2
+  activeDeadlineSeconds: 180
+  template:
+    metadata:
+      labels:
+        app: function-register
+    spec:
+      restartPolicy: Never
+      topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: ScheduleAnyway
+        labelSelector:
+          matchLabels:
+            app: function-register
+      initContainers:
+      - name: nfd-address
+        image: ghcr.io/nakazato-lab/ndn-dhcp/ndn-dhcp-client:latest
+        imagePullPolicy: Always
+        env:
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        volumeMounts:
+        - name: nfd-endpoint
+          mountPath: /etc/ndn-config
+      containers:
+      - name: registerer
+        image: ghcr.io/nakazato-lab/function-utils/ndn-function-registerer:latest
+        imagePullPolicy: Always
+        command:
+        - python
+        - -u
+        - /app/register.py
+        env:
+        - name: NFD_CONFIG_PATH
+          value: /etc/ndn-config/ADDRESS
+        - name: NFD_NAME_PATH
+          value: /etc/ndn-config/ROUTER_NAME
+        - name: FUNCTION_NAME
+          value: compress_image
+        - name: FUNCTION_RUNTIME
+          value: python
+        - name: FUNCTION_CODE
+          value: |
+            import io
+            import sys
+
+            from ndn.app import NDNApp
+            from ndn.encoding import Component, Name
+            from ndn.security import KeychainDigest
+            from PIL import Image
+            from segmented_node_wrapper import SegmentedNodeWrapper
+
+
+            app = NDNApp(keychain=KeychainDigest())
+
+
+            async def main():
+                try:
+                    name, _, content = await app.express_interest(
+                        sys.argv[1], can_be_prefix=True, must_be_fresh=True)
+                    if Component.get_type(name[-1]) == Component.TYPE_SEGMENT:
+                        content = await SegmentedNodeWrapper(app).fetch(
+                            Name.to_str(name[:-1]), must_be_fresh=True)
+                    output = io.BytesIO()
+                    with Image.open(io.BytesIO(bytes(content))) as image:
+                        image.save(output, format='PNG', optimize=True)
+                    sys.stdout.buffer.write(output.getvalue())
+                    sys.stdout.buffer.flush()
+                finally:
+                    app.shutdown()
+
+
+            if __name__ == '__main__':
+                app.run_forever(after_start=main())
+        - name: FUNCTION_REQUIREMENTS
+          value: '["Pillow", "python-ndn==0.4.2", "segmented-node-wrapper @ https://github.com/nakazato-lab/segmented-node-wrapper/archive/46454ca3df3f2add461b77e20c0627c27a0d90e7.zip"]'
+        - name: FUNCTION_PREFERENCE_CPU
+          value: medium
+        - name: FUNCTION_PREFERENCE_MEMORY
+          value: medium
+        - name: FUNCTION_PREFERENCE_BANDWIDTH
+          value: medium
+        - name: MANAGER_REGISTER_NAME
+          value: /Manager/register
+        volumeMounts:
+        - name: nfd-endpoint
+          mountPath: /etc/ndn-config
+          readOnly: true
+      volumes:
+      - name: nfd-endpoint
+        emptyDir: {}
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
   name: function-register-print-image-1adf0ed04f27
   namespace: ndn
   annotations:
@@ -117,7 +220,7 @@ spec:
           import subprocess, zipfile
           from pathlib import Path
           subprocess.run(['git', 'init', '/app/package/repository'], check=True)
-          subprocess.run(['git', '-C', '/app/package/repository', 'fetch', '--depth', '1', 'https://github.com/nakazato-lab/function-utils.git', 'dba2046cfef8bb45ed0388249d407c4f19faa2c1'], check=True)
+          subprocess.run(['git', '-C', '/app/package/repository', 'fetch', '--depth', '1', 'https://github.com/nakazato-lab/function-utils.git', 'b37b6e6e8ea629531f759520b29ea7373215b323'], check=True)
           subprocess.run(['git', '-C', '/app/package/repository', 'checkout', '--detach', 'FETCH_HEAD'], check=True)
           root = Path('/app/package/repository/ndn-scripts/func')
           with zipfile.ZipFile('/app/package/function.zip', 'w', compression=zipfile.ZIP_DEFLATED) as archive:
