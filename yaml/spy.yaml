@@ -35,6 +35,10 @@ spec:
           image: ghcr.io/nakazato-lab/ndn_resorce_placement/ndn-spy:latest
           imagePullPolicy: Always
           env:
+            - name: OTEL_SERVICE_NAME
+              value: spy
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: http://jaeger.jaeger.svc.cluster.local:4318
             - name: NODE_EXPORTER_URL
               value: http://127.0.0.1:9100/metrics
             - name: NODE_NAME
