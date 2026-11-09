@@ -2,7 +2,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: function-register-capital-japan-34dd215d72d5
+  name: function-register-capital-japan-eda40e1e7311
   namespace: ndn
   annotations:
     argocd.argoproj.io/sync-wave: '1'
@@ -64,6 +64,10 @@ spec:
           value: medium
         - name: MANAGER_REGISTER_NAME
           value: /Manager/register
+        - name: OTEL_SERVICE_NAME
+          value: registerer
+        - name: OTEL_EXPORTER_OTLP_ENDPOINT
+          value: http://jaeger.jaeger.svc.cluster.local:4318
         volumeMounts:
         - name: nfd-endpoint
           mountPath: /etc/ndn-config
@@ -75,7 +79,7 @@ spec:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: function-register-compress-image-104030a64b9c
+  name: function-register-compress-image-9fa7260632e8
   namespace: ndn
   annotations:
     argocd.argoproj.io/sync-wave: '1'
@@ -148,6 +152,10 @@ spec:
           value: medium
         - name: MANAGER_REGISTER_NAME
           value: /Manager/register
+        - name: OTEL_SERVICE_NAME
+          value: registerer
+        - name: OTEL_EXPORTER_OTLP_ENDPOINT
+          value: http://jaeger.jaeger.svc.cluster.local:4318
         volumeMounts:
         - name: nfd-endpoint
           mountPath: /etc/ndn-config
@@ -159,7 +167,7 @@ spec:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: function-register-print-image-1adf0ed04f27
+  name: function-register-print-image-d9fc353fff46
   namespace: ndn
   annotations:
     argocd.argoproj.io/sync-wave: '1'
@@ -201,7 +209,7 @@ spec:
           import subprocess, zipfile
           from pathlib import Path
           subprocess.run(['git', 'init', '/app/package/repository'], check=True)
-          subprocess.run(['git', '-C', '/app/package/repository', 'fetch', '--depth', '1', 'https://github.com/nakazato-lab/function-utils.git', '64ac804e7d7ad3583179b0181d1ff747e11c591a'], check=True)
+          subprocess.run(['git', '-C', '/app/package/repository', 'fetch', '--depth', '1', 'https://github.com/nakazato-lab/function-utils.git', '6e0a2666abffe4ba3a1917f83a913a6cc9a2e630'], check=True)
           subprocess.run(['git', '-C', '/app/package/repository', 'checkout', '--detach', 'FETCH_HEAD'], check=True)
           root = Path('/app/package/repository/ndn-scripts/func')
           with zipfile.ZipFile('/app/package/function.zip', 'w', compression=zipfile.ZIP_DEFLATED) as archive:
@@ -247,6 +255,10 @@ spec:
           value: medium
         - name: MANAGER_REGISTER_NAME
           value: /Manager/register
+        - name: OTEL_SERVICE_NAME
+          value: registerer
+        - name: OTEL_EXPORTER_OTLP_ENDPOINT
+          value: http://jaeger.jaeger.svc.cluster.local:4318
         volumeMounts:
         - name: nfd-endpoint
           mountPath: /etc/ndn-config
@@ -263,7 +275,7 @@ spec:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: function-register-rename-city-to-kanji-1be5deef3678
+  name: function-register-rename-city-to-kanji-750c86ded0fe
   namespace: ndn
   annotations:
     argocd.argoproj.io/sync-wave: '1'
@@ -825,6 +837,10 @@ spec:
           value: medium
         - name: MANAGER_REGISTER_NAME
           value: /Manager/register
+        - name: OTEL_SERVICE_NAME
+          value: registerer
+        - name: OTEL_EXPORTER_OTLP_ENDPOINT
+          value: http://jaeger.jaeger.svc.cluster.local:4318
         volumeMounts:
         - name: nfd-endpoint
           mountPath: /etc/ndn-config
@@ -836,7 +852,7 @@ spec:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: function-register-rename-to-kanji-b1c95ec236b8
+  name: function-register-rename-to-kanji-ab8a8918b659
   namespace: ndn
   annotations:
     argocd.argoproj.io/sync-wave: '1'
@@ -904,6 +920,10 @@ spec:
           value: medium
         - name: MANAGER_REGISTER_NAME
           value: /Manager/register
+        - name: OTEL_SERVICE_NAME
+          value: registerer
+        - name: OTEL_EXPORTER_OTLP_ENDPOINT
+          value: http://jaeger.jaeger.svc.cluster.local:4318
         volumeMounts:
         - name: nfd-endpoint
           mountPath: /etc/ndn-config
@@ -915,7 +935,7 @@ spec:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: function-register-sqrt-numpy-bcc93a80ca4d
+  name: function-register-sqrt-numpy-82bf1d53b730
   namespace: ndn
   annotations:
     argocd.argoproj.io/sync-wave: '1'
@@ -983,6 +1003,10 @@ spec:
           value: medium
         - name: MANAGER_REGISTER_NAME
           value: /Manager/register
+        - name: OTEL_SERVICE_NAME
+          value: registerer
+        - name: OTEL_EXPORTER_OTLP_ENDPOINT
+          value: http://jaeger.jaeger.svc.cluster.local:4318
         volumeMounts:
         - name: nfd-endpoint
           mountPath: /etc/ndn-config
@@ -994,7 +1018,7 @@ spec:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: function-register-ten-x-5171774a31dd
+  name: function-register-ten-x-dc322c2b34d0
   namespace: ndn
   annotations:
     argocd.argoproj.io/sync-wave: '1'
@@ -1059,6 +1083,10 @@ spec:
           value: medium
         - name: MANAGER_REGISTER_NAME
           value: /Manager/register
+        - name: OTEL_SERVICE_NAME
+          value: registerer
+        - name: OTEL_EXPORTER_OTLP_ENDPOINT
+          value: http://jaeger.jaeger.svc.cluster.local:4318
         volumeMounts:
         - name: nfd-endpoint
           mountPath: /etc/ndn-config
