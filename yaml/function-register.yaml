@@ -201,7 +201,7 @@ spec:
           import subprocess, zipfile
           from pathlib import Path
           subprocess.run(['git', 'init', '/app/package/repository'], check=True)
-          subprocess.run(['git', '-C', '/app/package/repository', 'fetch', '--depth', '1', 'https://github.com/nakazato-lab/function-utils.git', 'd89bddef9b70f4d99b21a85fba8cb970cdf9ee80'], check=True)
+          subprocess.run(['git', '-C', '/app/package/repository', 'fetch', '--depth', '1', 'https://github.com/nakazato-lab/function-utils.git', '3f7640b00e352ac9e2114001848153096d2f9acb'], check=True)
           subprocess.run(['git', '-C', '/app/package/repository', 'checkout', '--detach', 'FETCH_HEAD'], check=True)
           root = Path('/app/package/repository/ndn-scripts/func')
           with zipfile.ZipFile('/app/package/function.zip', 'w', compression=zipfile.ZIP_DEFLATED) as archive:
