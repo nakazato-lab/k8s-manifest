@@ -17,7 +17,7 @@ spec:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: function-invoke-use-capital-japan-49c0f23fc3c2
+  name: function-invoke-use-capital-japan-19e7be86aa5e
   namespace: ndn
   annotations:
     argocd.argoproj.io/sync-wave: '2'
@@ -68,6 +68,10 @@ spec:
           value: |
             let capital = interest "/capital/japan"
             print capital
+        - name: OTEL_SERVICE_NAME
+          value: invoker
+        - name: OTEL_EXPORTER_OTLP_ENDPOINT
+          value: http://jaeger.jaeger.svc.cluster.local:4318
         volumeMounts:
         - name: nfd-endpoint
           mountPath: /etc/ndn-config
@@ -79,7 +83,7 @@ spec:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: function-invoke-use-compress-image-866611d72a06
+  name: function-invoke-use-compress-image-2b262cb63d16
   namespace: ndn
   annotations:
     argocd.argoproj.io/sync-wave: '2'
@@ -131,6 +135,10 @@ spec:
             let image = interest "/print_image"
             let compressed = compress_image(image)
             return compressed
+        - name: OTEL_SERVICE_NAME
+          value: invoker
+        - name: OTEL_EXPORTER_OTLP_ENDPOINT
+          value: http://jaeger.jaeger.svc.cluster.local:4318
         - name: NDN_OUTPUT_DIR
           value: /output
         volumeMounts:
@@ -149,7 +157,7 @@ spec:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: function-invoke-use-print-image-46bf5cea5f0d
+  name: function-invoke-use-print-image-f739c04463ea
   namespace: ndn
   annotations:
     argocd.argoproj.io/sync-wave: '2'
@@ -200,6 +208,10 @@ spec:
           value: |
             let image = interest "/print_image"
             return image
+        - name: OTEL_SERVICE_NAME
+          value: invoker
+        - name: OTEL_EXPORTER_OTLP_ENDPOINT
+          value: http://jaeger.jaeger.svc.cluster.local:4318
         - name: NDN_OUTPUT_DIR
           value: /output
         volumeMounts:
@@ -218,7 +230,7 @@ spec:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: function-invoke-use-rename-city-to-kanji-3b902047da0d
+  name: function-invoke-use-rename-city-to-kanji-0fab38a0ca70
   namespace: ndn
   annotations:
     argocd.argoproj.io/sync-wave: '2'
@@ -269,6 +281,10 @@ spec:
           value: |
             let result = rename_city_to_kanji("Fukuoka")
             print result
+        - name: OTEL_SERVICE_NAME
+          value: invoker
+        - name: OTEL_EXPORTER_OTLP_ENDPOINT
+          value: http://jaeger.jaeger.svc.cluster.local:4318
         volumeMounts:
         - name: nfd-endpoint
           mountPath: /etc/ndn-config
@@ -280,7 +296,7 @@ spec:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: function-invoke-use-rename-to-kanji-41bdfdae0c75
+  name: function-invoke-use-rename-to-kanji-203f3a2f23e0
   namespace: ndn
   annotations:
     argocd.argoproj.io/sync-wave: '2'
@@ -331,6 +347,10 @@ spec:
           value: |
             let result = rename_to_kanji(interest "/capital/japan")
             print result
+        - name: OTEL_SERVICE_NAME
+          value: invoker
+        - name: OTEL_EXPORTER_OTLP_ENDPOINT
+          value: http://jaeger.jaeger.svc.cluster.local:4318
         volumeMounts:
         - name: nfd-endpoint
           mountPath: /etc/ndn-config
@@ -342,7 +362,7 @@ spec:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: function-invoke-use-sqrt-numpy-172732a441bd
+  name: function-invoke-use-sqrt-numpy-223a4f42a63b
   namespace: ndn
   annotations:
     argocd.argoproj.io/sync-wave: '2'
@@ -393,6 +413,10 @@ spec:
           value: |
             let result = sqrt_numpy(16)
             print result
+        - name: OTEL_SERVICE_NAME
+          value: invoker
+        - name: OTEL_EXPORTER_OTLP_ENDPOINT
+          value: http://jaeger.jaeger.svc.cluster.local:4318
         volumeMounts:
         - name: nfd-endpoint
           mountPath: /etc/ndn-config
@@ -404,7 +428,7 @@ spec:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: function-invoke-use-ten-x-e8208e2d7b11
+  name: function-invoke-use-ten-x-4d67fb7e40f3
   namespace: ndn
   annotations:
     argocd.argoproj.io/sync-wave: '2'
@@ -458,6 +482,10 @@ spec:
 
               let second = ten_x(20)
               print second
+        - name: OTEL_SERVICE_NAME
+          value: invoker
+        - name: OTEL_EXPORTER_OTLP_ENDPOINT
+          value: http://jaeger.jaeger.svc.cluster.local:4318
         volumeMounts:
         - name: nfd-endpoint
           mountPath: /etc/ndn-config
