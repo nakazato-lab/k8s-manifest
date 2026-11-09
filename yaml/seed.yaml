@@ -31,6 +31,10 @@ spec:
           image: ghcr.io/nakazato-lab/ndn-tools-seed-python/ndn-seed:latest
           imagePullPolicy: Always
           env:
+            - name: OTEL_SERVICE_NAME
+              value: seed
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: http://jaeger.jaeger.svc.cluster.local:4318
             - name: NDN_FUNCTION_IMAGE
               value: ghcr.io/nakazato-lab/ndn-tools-seed-python/ndn-function-runtime:latest
             - name: SIDECAR_IMAGE
