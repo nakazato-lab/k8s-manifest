@@ -32,6 +32,10 @@ spec:
           image: ghcr.io/nakazato-lab/ndn_resorce_placement/ndn-manager:latest
           imagePullPolicy: Always
           env:
+            - name: OTEL_SERVICE_NAME
+              value: manager
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: http://jaeger.jaeger.svc.cluster.local:4318
             - name: NFD_NAME_PATH
               value: /etc/ndn-config/ROUTER_NAME
           volumeMounts:
