@@ -209,7 +209,7 @@ spec:
           import subprocess, zipfile
           from pathlib import Path
           subprocess.run(['git', 'init', '/app/package/repository'], check=True)
-          subprocess.run(['git', '-C', '/app/package/repository', 'fetch', '--depth', '1', 'https://github.com/nakazato-lab/function-utils.git', '6e0a2666abffe4ba3a1917f83a913a6cc9a2e630'], check=True)
+          subprocess.run(['git', '-C', '/app/package/repository', 'fetch', '--depth', '1', 'https://github.com/nakazato-lab/function-utils.git', '262d4380ce9b6a6707d34a597c476aeea0b160c8'], check=True)
           subprocess.run(['git', '-C', '/app/package/repository', 'checkout', '--detach', 'FETCH_HEAD'], check=True)
           root = Path('/app/package/repository/ndn-scripts/func')
           with zipfile.ZipFile('/app/package/function.zip', 'w', compression=zipfile.ZIP_DEFLATED) as archive:
@@ -912,6 +912,98 @@ spec:
                 print("不明")
         - name: FUNCTION_REQUIREMENTS
           value: '[]'
+        - name: FUNCTION_PREFERENCE_CPU
+          value: medium
+        - name: FUNCTION_PREFERENCE_MEMORY
+          value: medium
+        - name: FUNCTION_PREFERENCE_BANDWIDTH
+          value: medium
+        - name: MANAGER_REGISTER_NAME
+          value: /Manager/register
+        - name: OTEL_SERVICE_NAME
+          value: registerer
+        - name: OTEL_EXPORTER_OTLP_ENDPOINT
+          value: http://jaeger.jaeger.svc.cluster.local:4318
+        volumeMounts:
+        - name: nfd-endpoint
+          mountPath: /etc/ndn-config
+          readOnly: true
+      volumes:
+      - name: nfd-endpoint
+        emptyDir: {}
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: function-register-resize-1c2da36df03c
+  namespace: ndn
+  annotations:
+    argocd.argoproj.io/sync-wave: '1'
+spec:
+  backoffLimit: 2
+  activeDeadlineSeconds: 180
+  template:
+    metadata:
+      labels:
+        app: function-register
+    spec:
+      restartPolicy: Never
+      topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: ScheduleAnyway
+        labelSelector:
+          matchLabels:
+            app: function-register
+      initContainers:
+      - name: nfd-address
+        image: ghcr.io/nakazato-lab/ndn-dhcp/ndn-dhcp-client:latest
+        imagePullPolicy: Always
+        env:
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        volumeMounts:
+        - name: nfd-endpoint
+          mountPath: /etc/ndn-config
+      containers:
+      - name: registerer
+        image: ghcr.io/nakazato-lab/function-utils/ndn-function-registerer:latest
+        imagePullPolicy: Always
+        command:
+        - python
+        - -u
+        - /app/register.py
+        env:
+        - name: NFD_CONFIG_PATH
+          value: /etc/ndn-config/ADDRESS
+        - name: NFD_NAME_PATH
+          value: /etc/ndn-config/ROUTER_NAME
+        - name: FUNCTION_NAME
+          value: resize
+        - name: FUNCTION_RUNTIME
+          value: python
+        - name: FUNCTION_CODE
+          value: |
+            import io
+            import sys
+
+            from PIL import Image
+
+
+            content = sys.stdin.buffer.read()
+            width_ratio = float(sys.argv[1])
+            height_ratio = float(sys.argv[2])
+            output = io.BytesIO()
+            with Image.open(io.BytesIO(content)) as image:
+                size = (round(image.width * width_ratio), round(image.height * height_ratio))
+                resized = image.resize(size, Image.Resampling.LANCZOS)
+                resized.save(output, format='PNG')
+            sys.stdout.buffer.write(output.getvalue())
+            sys.stdout.buffer.flush()
+        - name: FUNCTION_REQUIREMENTS
+          value: '["Pillow"]'
         - name: FUNCTION_PREFERENCE_CPU
           value: medium
         - name: FUNCTION_PREFERENCE_MEMORY

@@ -362,6 +362,80 @@ spec:
 apiVersion: batch/v1
 kind: Job
 metadata:
+  name: function-invoke-use-resize-image-570ec0618ba7
+  namespace: ndn
+  annotations:
+    argocd.argoproj.io/sync-wave: '2'
+spec:
+  backoffLimit: 2
+  activeDeadlineSeconds: 300
+  template:
+    metadata:
+      labels:
+        app: function-invoke
+    spec:
+      restartPolicy: Never
+      topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: ScheduleAnyway
+        labelSelector:
+          matchLabels:
+            app: function-invoke
+      initContainers:
+      - name: nfd-address
+        image: ghcr.io/nakazato-lab/ndn-dhcp/ndn-dhcp-client:latest
+        imagePullPolicy: Always
+        env:
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        volumeMounts:
+        - name: nfd-endpoint
+          mountPath: /etc/ndn-config
+      containers:
+      - name: invoker
+        image: ghcr.io/nakazato-lab/function-utils/ndn-function-invoker:latest
+        imagePullPolicy: Always
+        command:
+        - python
+        - -u
+        - /app/invoke.py
+        env:
+        - name: NFD_CONFIG_PATH
+          value: /etc/ndn-config/ADDRESS
+        - name: NFD_NAME_PATH
+          value: /etc/ndn-config/ROUTER_NAME
+        - name: NDN_SCRIPT_NAME
+          value: use_resize_image.ndn
+        - name: NDN_SCRIPT_SOURCE
+          value: |
+            let image = interest "/print_image"
+            let resized = resize(image, 0.5, 1)
+            return resized
+        - name: OTEL_SERVICE_NAME
+          value: invoker
+        - name: OTEL_EXPORTER_OTLP_ENDPOINT
+          value: http://jaeger.jaeger.svc.cluster.local:4318
+        - name: NDN_OUTPUT_DIR
+          value: /output
+        volumeMounts:
+        - name: nfd-endpoint
+          mountPath: /etc/ndn-config
+          readOnly: true
+        - name: output
+          mountPath: /output
+      volumes:
+      - name: nfd-endpoint
+        emptyDir: {}
+      - name: output
+        persistentVolumeClaim:
+          claimName: function-invoke-output
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
   name: function-invoke-use-sqrt-numpy-223a4f42a63b
   namespace: ndn
   annotations:
