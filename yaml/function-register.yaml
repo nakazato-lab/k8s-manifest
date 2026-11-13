@@ -2,10 +2,10 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: function-register-capital-japan-eda40e1e7311
   namespace: ndn
   annotations:
     argocd.argoproj.io/sync-wave: '1'
+  name: function-register-capital-japan-b0761aae5e84
 spec:
   backoffLimit: 2
   activeDeadlineSeconds: 180
@@ -79,10 +79,10 @@ spec:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: function-register-compress-image-9fa7260632e8
   namespace: ndn
   annotations:
     argocd.argoproj.io/sync-wave: '1'
+  name: function-register-compress-image-240eabdc9ba7
 spec:
   backoffLimit: 2
   activeDeadlineSeconds: 180
@@ -167,10 +167,10 @@ spec:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: function-register-print-image-d9fc353fff46
   namespace: ndn
   annotations:
     argocd.argoproj.io/sync-wave: '1'
+  name: function-register-print-image-03bff058f7b8
 spec:
   backoffLimit: 2
   activeDeadlineSeconds: 180
@@ -209,7 +209,7 @@ spec:
           import subprocess, zipfile
           from pathlib import Path
           subprocess.run(['git', 'init', '/app/package/repository'], check=True)
-          subprocess.run(['git', '-C', '/app/package/repository', 'fetch', '--depth', '1', 'https://github.com/nakazato-lab/function-utils.git', 'e9de56ef84aaba2494d540284e83dd029ce67e1b'], check=True)
+          subprocess.run(['git', '-C', '/app/package/repository', 'fetch', '--depth', '1', 'https://github.com/nakazato-lab/function-utils.git', 'c180a8be9969ce27bad1c3592a7deae094c549b7'], check=True)
           subprocess.run(['git', '-C', '/app/package/repository', 'checkout', '--detach', 'FETCH_HEAD'], check=True)
           root = Path('/app/package/repository/ndn-scripts/func')
           with zipfile.ZipFile('/app/package/function.zip', 'w', compression=zipfile.ZIP_DEFLATED) as archive:
@@ -275,10 +275,10 @@ spec:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: function-register-rename-city-to-kanji-750c86ded0fe
   namespace: ndn
   annotations:
     argocd.argoproj.io/sync-wave: '1'
+  name: function-register-rename-city-to-kanji-4e7d2ce70724
 spec:
   backoffLimit: 2
   activeDeadlineSeconds: 180
@@ -852,10 +852,10 @@ spec:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: function-register-rename-to-kanji-ab8a8918b659
   namespace: ndn
   annotations:
     argocd.argoproj.io/sync-wave: '1'
+  name: function-register-rename-to-kanji-65e396fc2c7e
 spec:
   backoffLimit: 2
   activeDeadlineSeconds: 180
@@ -935,10 +935,10 @@ spec:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: function-register-resize-1c2da36df03c
   namespace: ndn
   annotations:
     argocd.argoproj.io/sync-wave: '1'
+  name: function-register-resize-bf8b1915453b
 spec:
   backoffLimit: 2
   activeDeadlineSeconds: 180
@@ -1027,10 +1027,10 @@ spec:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: function-register-sqrt-numpy-82bf1d53b730
   namespace: ndn
   annotations:
     argocd.argoproj.io/sync-wave: '1'
+  name: function-register-sqrt-numpy-25b0d3e0bb9e
 spec:
   backoffLimit: 2
   activeDeadlineSeconds: 180
@@ -1110,10 +1110,10 @@ spec:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: function-register-ten-x-dc322c2b34d0
   namespace: ndn
   annotations:
     argocd.argoproj.io/sync-wave: '1'
+  name: function-register-ten-x-c81a8bb155ee
 spec:
   backoffLimit: 2
   activeDeadlineSeconds: 180

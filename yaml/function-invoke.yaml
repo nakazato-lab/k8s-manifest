@@ -17,10 +17,10 @@ spec:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: function-invoke-use-capital-japan-19e7be86aa5e
   namespace: ndn
   annotations:
     argocd.argoproj.io/sync-wave: '2'
+  name: function-invoke-use-capital-japan-3d0a82254db7
 spec:
   backoffLimit: 2
   activeDeadlineSeconds: 300
@@ -83,10 +83,10 @@ spec:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: function-invoke-use-compress-image-2b262cb63d16
   namespace: ndn
   annotations:
     argocd.argoproj.io/sync-wave: '2'
+  name: function-invoke-use-compress-image-b0739353629c
 spec:
   backoffLimit: 2
   activeDeadlineSeconds: 300
@@ -157,10 +157,10 @@ spec:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: function-invoke-use-compress-image-chain-6ec492ebe737
   namespace: ndn
   annotations:
     argocd.argoproj.io/sync-wave: '2'
+  name: function-invoke-use-compress-image-chain-8e956155dbf0
 spec:
   backoffLimit: 2
   activeDeadlineSeconds: 300
@@ -230,10 +230,10 @@ spec:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: function-invoke-use-print-image-f739c04463ea
   namespace: ndn
   annotations:
     argocd.argoproj.io/sync-wave: '2'
+  name: function-invoke-use-print-image-d8b1bac854c8
 spec:
   backoffLimit: 2
   activeDeadlineSeconds: 300
@@ -303,10 +303,10 @@ spec:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: function-invoke-use-rename-city-to-kanji-0fab38a0ca70
   namespace: ndn
   annotations:
     argocd.argoproj.io/sync-wave: '2'
+  name: function-invoke-use-rename-city-to-kanji-d8c5a7719625
 spec:
   backoffLimit: 2
   activeDeadlineSeconds: 300
@@ -369,10 +369,10 @@ spec:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: function-invoke-use-rename-to-kanji-203f3a2f23e0
   namespace: ndn
   annotations:
     argocd.argoproj.io/sync-wave: '2'
+  name: function-invoke-use-rename-to-kanji-e41ae5051ac2
 spec:
   backoffLimit: 2
   activeDeadlineSeconds: 300
@@ -435,10 +435,10 @@ spec:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: function-invoke-use-resize-image-570ec0618ba7
   namespace: ndn
   annotations:
     argocd.argoproj.io/sync-wave: '2'
+  name: function-invoke-use-resize-image-2f8f645b35cf
 spec:
   backoffLimit: 2
   activeDeadlineSeconds: 300
@@ -509,10 +509,10 @@ spec:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: function-invoke-use-sqrt-numpy-223a4f42a63b
   namespace: ndn
   annotations:
     argocd.argoproj.io/sync-wave: '2'
+  name: function-invoke-use-sqrt-numpy-e7f1b95dc6d1
 spec:
   backoffLimit: 2
   activeDeadlineSeconds: 300
@@ -575,10 +575,10 @@ spec:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: function-invoke-use-ten-x-4d67fb7e40f3
   namespace: ndn
   annotations:
     argocd.argoproj.io/sync-wave: '2'
+  name: function-invoke-use-ten-x-08344025e372
 spec:
   backoffLimit: 2
   activeDeadlineSeconds: 300
