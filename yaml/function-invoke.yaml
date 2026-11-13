@@ -157,7 +157,7 @@ spec:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: function-invoke-use-compress-image-sideca-be759d35fd8f
+  name: function-invoke-use-compress-image-chain-6ec492ebe737
   namespace: ndn
   annotations:
     argocd.argoproj.io/sync-wave: '2'
@@ -203,7 +203,7 @@ spec:
         - name: NFD_NAME_PATH
           value: /etc/ndn-config/ROUTER_NAME
         - name: NDN_SCRIPT_NAME
-          value: use_compress_image_sidecar.ndn
+          value: use_compress_image_chain.ndn
         - name: NDN_SCRIPT_SOURCE
           value: |
             let compressed = compress_image(interest "/print_image")
