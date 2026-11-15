@@ -1193,10 +1193,10 @@ metadata:
   namespace: ndn
   annotations:
     argocd.argoproj.io/sync-wave: '1'
-  name: function-delete-test-fail-81e82d8b0c0d
+  name: function-register-test-fail-81e82d8b0c0d
 spec:
   backoffLimit: 2
-  activeDeadlineSeconds: 300
+  activeDeadlineSeconds: 180
   template:
     metadata:
       labels:
@@ -1239,14 +1239,26 @@ spec:
           value: test-fail
         - name: FUNCTION_RUNTIME
           value: python
+        - name: FUNCTION_CODE
+          value: |
+            import numpy as np
+
+
+            print(np.sqrt(4))
+        - name: FUNCTION_REQUIREMENTS
+          value: '["numpy==invalid-version"]'
+        - name: FUNCTION_PREFERENCE_CPU
+          value: medium
+        - name: FUNCTION_PREFERENCE_MEMORY
+          value: medium
+        - name: FUNCTION_PREFERENCE_BANDWIDTH
+          value: medium
         - name: MANAGER_REGISTER_NAME
           value: /Manager/register
         - name: OTEL_SERVICE_NAME
           value: registerer
         - name: OTEL_EXPORTER_OTLP_ENDPOINT
           value: http://jaeger.jaeger.svc.cluster.local:4318
-        - name: FUNCTION_OPERATION
-          value: DELETE
         volumeMounts:
         - name: nfd-endpoint
           mountPath: /etc/ndn-config
