@@ -170,7 +170,7 @@ metadata:
   namespace: ndn
   annotations:
     argocd.argoproj.io/sync-wave: '1'
-  name: function-register-print-image-d7b9b8c8b8aa
+  name: function-register-print-image-4030c0b8dac0
 spec:
   backoffLimit: 2
   activeDeadlineSeconds: 180
@@ -209,7 +209,7 @@ spec:
           import subprocess, zipfile
           from pathlib import Path
           subprocess.run(['git', 'init', '/app/package/repository'], check=True)
-          subprocess.run(['git', '-C', '/app/package/repository', 'fetch', '--depth', '1', 'https://github.com/nakazato-lab/function-utils.git', '99137c2f5d292e0d9013e017cda38509501003a4'], check=True)
+          subprocess.run(['git', '-C', '/app/package/repository', 'fetch', '--depth', '1', 'https://github.com/nakazato-lab/function-utils.git', 'b2644feef7a1fea024f63c24284d68dad726f3e2'], check=True)
           subprocess.run(['git', '-C', '/app/package/repository', 'checkout', '--detach', 'FETCH_HEAD'], check=True)
           root = Path('/app/package/repository/ndn-scripts/func')
           with zipfile.ZipFile('/app/package/function.zip', 'w', compression=zipfile.ZIP_DEFLATED) as archive:
@@ -1193,10 +1193,10 @@ metadata:
   namespace: ndn
   annotations:
     argocd.argoproj.io/sync-wave: '1'
-  name: function-register-test-fail-81e82d8b0c0d
+  name: function-delete-test-fail-81e82d8b0c0d
 spec:
   backoffLimit: 2
-  activeDeadlineSeconds: 180
+  activeDeadlineSeconds: 300
   template:
     metadata:
       labels:
@@ -1239,26 +1239,14 @@ spec:
           value: test-fail
         - name: FUNCTION_RUNTIME
           value: python
-        - name: FUNCTION_CODE
-          value: |
-            import numpy as np
-
-
-            print(np.sqrt(4))
-        - name: FUNCTION_REQUIREMENTS
-          value: '["numpy==invalid-version"]'
-        - name: FUNCTION_PREFERENCE_CPU
-          value: medium
-        - name: FUNCTION_PREFERENCE_MEMORY
-          value: medium
-        - name: FUNCTION_PREFERENCE_BANDWIDTH
-          value: medium
         - name: MANAGER_REGISTER_NAME
           value: /Manager/register
         - name: OTEL_SERVICE_NAME
           value: registerer
         - name: OTEL_EXPORTER_OTLP_ENDPOINT
           value: http://jaeger.jaeger.svc.cluster.local:4318
+        - name: FUNCTION_OPERATION
+          value: DELETE
         volumeMounts:
         - name: nfd-endpoint
           mountPath: /etc/ndn-config
