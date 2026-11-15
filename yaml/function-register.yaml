@@ -170,7 +170,7 @@ metadata:
   namespace: ndn
   annotations:
     argocd.argoproj.io/sync-wave: '1'
-  name: function-register-print-image-03bff058f7b8
+  name: function-register-print-image-d7b9b8c8b8aa
 spec:
   backoffLimit: 2
   activeDeadlineSeconds: 180
@@ -209,7 +209,7 @@ spec:
           import subprocess, zipfile
           from pathlib import Path
           subprocess.run(['git', 'init', '/app/package/repository'], check=True)
-          subprocess.run(['git', '-C', '/app/package/repository', 'fetch', '--depth', '1', 'https://github.com/nakazato-lab/function-utils.git', 'c180a8be9969ce27bad1c3592a7deae094c549b7'], check=True)
+          subprocess.run(['git', '-C', '/app/package/repository', 'fetch', '--depth', '1', 'https://github.com/nakazato-lab/function-utils.git', '99137c2f5d292e0d9013e017cda38509501003a4'], check=True)
           subprocess.run(['git', '-C', '/app/package/repository', 'checkout', '--detach', 'FETCH_HEAD'], check=True)
           root = Path('/app/package/repository/ndn-scripts/func')
           with zipfile.ZipFile('/app/package/function.zip', 'w', compression=zipfile.ZIP_DEFLATED) as archive:
@@ -1167,6 +1167,86 @@ spec:
             print(arg0 * 10)
         - name: FUNCTION_REQUIREMENTS
           value: '[]'
+        - name: FUNCTION_PREFERENCE_CPU
+          value: medium
+        - name: FUNCTION_PREFERENCE_MEMORY
+          value: medium
+        - name: FUNCTION_PREFERENCE_BANDWIDTH
+          value: medium
+        - name: MANAGER_REGISTER_NAME
+          value: /Manager/register
+        - name: OTEL_SERVICE_NAME
+          value: registerer
+        - name: OTEL_EXPORTER_OTLP_ENDPOINT
+          value: http://jaeger.jaeger.svc.cluster.local:4318
+        volumeMounts:
+        - name: nfd-endpoint
+          mountPath: /etc/ndn-config
+          readOnly: true
+      volumes:
+      - name: nfd-endpoint
+        emptyDir: {}
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  namespace: ndn
+  annotations:
+    argocd.argoproj.io/sync-wave: '1'
+  name: function-register-test-fail-81e82d8b0c0d
+spec:
+  backoffLimit: 2
+  activeDeadlineSeconds: 180
+  template:
+    metadata:
+      labels:
+        app: function-register
+    spec:
+      restartPolicy: Never
+      topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: ScheduleAnyway
+        labelSelector:
+          matchLabels:
+            app: function-register
+      initContainers:
+      - name: nfd-address
+        image: ghcr.io/nakazato-lab/ndn-dhcp/ndn-dhcp-client:latest
+        imagePullPolicy: Always
+        env:
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        volumeMounts:
+        - name: nfd-endpoint
+          mountPath: /etc/ndn-config
+      containers:
+      - name: registerer
+        image: ghcr.io/nakazato-lab/function-utils/ndn-function-registerer:latest
+        imagePullPolicy: Always
+        command:
+        - python
+        - -u
+        - /app/register.py
+        env:
+        - name: NFD_CONFIG_PATH
+          value: /etc/ndn-config/ADDRESS
+        - name: NFD_NAME_PATH
+          value: /etc/ndn-config/ROUTER_NAME
+        - name: FUNCTION_NAME
+          value: test-fail
+        - name: FUNCTION_RUNTIME
+          value: python
+        - name: FUNCTION_CODE
+          value: |
+            import numpy as np
+
+
+            print(np.sqrt(4))
+        - name: FUNCTION_REQUIREMENTS
+          value: '["numpy==invalid-version"]'
         - name: FUNCTION_PREFERENCE_CPU
           value: medium
         - name: FUNCTION_PREFERENCE_MEMORY
