@@ -1,0 +1,23 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: ndn
+
+resources:
+  - ../../yaml
+
+patches:
+  - path: nfd-storage-patch.yaml
+  - path: image-pull-policy-patch.yaml
+  - path: function-register-patch.yaml
+    target:
+      group: batch
+      version: v1
+      kind: Job
+      name: function-register-.*
+  - path: function-invoke-patch.yaml
+    target:
+      group: batch
+      version: v1
+      kind: Job
+      name: function-invoke-.*
+  - path: spy-network-metrics-patch.yaml

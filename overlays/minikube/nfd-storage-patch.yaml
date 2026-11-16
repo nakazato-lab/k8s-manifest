@@ -1,0 +1,15 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: ndn-router
+spec:
+  volumeClaimTemplates:
+    - metadata:
+        name: nlsr-state
+      spec:
+        storageClassName: standard
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 128Mi

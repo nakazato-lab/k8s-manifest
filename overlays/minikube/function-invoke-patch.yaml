@@ -1,0 +1,14 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: function-invoke
+  namespace: ndn
+spec:
+  template:
+    spec:
+      initContainers:
+        - name: nfd-address
+          imagePullPolicy: IfNotPresent
+      containers:
+        - name: invoker
+          imagePullPolicy: IfNotPresent

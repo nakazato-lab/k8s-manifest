@@ -1,0 +1,13 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: function-register
+spec:
+  template:
+    spec:
+      initContainers:
+        - name: nfd-address
+          imagePullPolicy: IfNotPresent
+      containers:
+        - name: registerer
+          imagePullPolicy: IfNotPresent

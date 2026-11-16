@@ -1,0 +1,27 @@
+# Reuse cached images during local restarts when GHCR/DNS is unavailable.
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: ndn-router
+spec:
+  template:
+    spec:
+      containers:
+        - name: nfd
+          imagePullPolicy: IfNotPresent
+        - name: nlsr
+          imagePullPolicy: IfNotPresent
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: seed-daemonset
+spec:
+  template:
+    spec:
+      initContainers:
+        - name: nfd-address
+          imagePullPolicy: IfNotPresent
+      containers:
+        - name: seed
+          imagePullPolicy: IfNotPresent
