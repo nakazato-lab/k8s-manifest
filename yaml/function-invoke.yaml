@@ -160,7 +160,7 @@ metadata:
   namespace: ndn
   annotations:
     argocd.argoproj.io/sync-wave: '2'
-  name: function-invoke-use-compress-image-chain-d026f8099722
+  name: function-invoke-use-compress-image-chain-8e956155dbf0
 spec:
   backoffLimit: 2
   activeDeadlineSeconds: 300
@@ -207,8 +207,7 @@ spec:
         - name: NDN_SCRIPT_SOURCE
           value: |
             let compressed = compress_image(interest "/print_image")
-            let compressed_again = compress_image(interest "/print_image")
-            return compressed_again
+            return compressed
         - name: OTEL_SERVICE_NAME
           value: invoker
         - name: OTEL_EXPORTER_OTLP_ENDPOINT
@@ -234,7 +233,7 @@ metadata:
   namespace: ndn
   annotations:
     argocd.argoproj.io/sync-wave: '2'
-  name: function-invoke-use-print-image-f950eb25b80c
+  name: function-invoke-use-print-image-d8b1bac854c8
 spec:
   backoffLimit: 2
   activeDeadlineSeconds: 300
@@ -281,8 +280,7 @@ spec:
         - name: NDN_SCRIPT_SOURCE
           value: |
             let image = interest "/print_image"
-            let image_again = interest "/print_image"
-            return image_again
+            return image
         - name: OTEL_SERVICE_NAME
           value: invoker
         - name: OTEL_EXPORTER_OTLP_ENDPOINT
