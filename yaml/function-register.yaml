@@ -168,7 +168,7 @@ metadata:
   namespace: ndn
   annotations:
     argocd.argoproj.io/sync-wave: '1'
-  name: function-register-print-image-fbe6a08e0238
+  name: function-register-print-image-50705f9d0efd
 spec:
   backoffLimit: 2
   activeDeadlineSeconds: 180
@@ -207,11 +207,11 @@ spec:
           import subprocess, zipfile
           from pathlib import Path
           subprocess.run(['git', 'init', '/app/package/repository'], check=True)
-          subprocess.run(['git', '-C', '/app/package/repository', 'fetch', '--depth', '1', 'https://github.com/nakazato-lab/function-utils.git', '010a9281eeae0bc79ea97f1c0943d04174c3247a'], check=True)
+          subprocess.run(['git', '-C', '/app/package/repository', 'fetch', '--depth', '1', 'https://github.com/nakazato-lab/function-utils.git', '70e76c0f5228b3ef35790c67a13cdb17049d9154'], check=True)
           subprocess.run(['git', '-C', '/app/package/repository', 'checkout', '--detach', 'FETCH_HEAD'], check=True)
           root = Path('/app/package/repository/ndn-scripts/func')
           with zipfile.ZipFile('/app/package/function.zip', 'w', compression=zipfile.ZIP_DEFLATED) as archive:
-              for filename in ['print_image.ndn', 'sample-512k.png']:
+              for filename in ['print_image.ndn', 'sample-256k.png']:
                   file_path = root / filename
                   if not file_path.resolve().is_relative_to(root):
                       raise ValueError('Function files must stay within ndn-scripts/func')
@@ -238,7 +238,7 @@ spec:
           value: ndn
         - name: FUNCTION_CODE
           value: |
-            put_image("sample-512k.png")
+            put_image("sample-256k.png")
         - name: FUNCTION_PACKAGE_PATH
           value: /app/package/function.zip
         - name: FUNCTION_SOURCE
